@@ -3,7 +3,7 @@ import './index.css'
 import App from './App.tsx'
 import { createBrowserRouter, RouterProvider } from 'react-router';
 import { StrictMode } from 'react';
-import { Home } from './pages';
+import { Home, ManagePlayers } from './pages';
 
 const router = createBrowserRouter([
   {
@@ -13,6 +13,10 @@ const router = createBrowserRouter([
       {
         index: true,
         element: <Home />,
+      },
+      {
+        path: "manage-players",
+        element: <ManagePlayers />,
       },
     ],
   },

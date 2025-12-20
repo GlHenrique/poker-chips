@@ -1,6 +1,6 @@
 {
   "$schema": "https://ui.shadcn.com/schema.json",
-  "style": "mira",
+  "style": "new-york",
   "rsc": false,
   "tsx": true,
   "tailwind": {
@@ -8,16 +8,9 @@
     "css": "src/index.css",
     "baseColor": "gray",
     "cssVariables": true,
-    "prefix": "",
-    "theme": "sky",
-    "radius": "medium"
+    "prefix": ""
   },
   "iconLibrary": "lucide",
-  "font": "inter",
-  "menu": {
-    "color": "inverted",
-    "accent": "subtle"
-  },
   "aliases": {
     "components": "@/components",
     "utils": "@/lib/utils",

@@ -1,3 +1,5 @@
+import { Link } from "react-router"
+
 export function Home() {
   return (
     <div className="space-y-6">
@@ -16,12 +18,15 @@ export function Home() {
           </p>
         </div>
 
-        <div className="rounded-lg border bg-card p-6">
+        <Link 
+          to="/manage-players" 
+          className="rounded-lg border bg-card p-6 hover:bg-accent transition-colors cursor-pointer block"
+        >
           <h3 className="text-lg font-semibold mb-2">Jogadores</h3>
           <p className="text-sm text-muted-foreground">
             Adicione e gerencie os jogadores das suas partidas.
           </p>
-        </div>
+        </Link>
 
        
       </div>

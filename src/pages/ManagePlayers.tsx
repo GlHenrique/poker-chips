@@ -1,0 +1,268 @@
+import { useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Edit2, Check, X } from "lucide-react";
+
+interface Chip {
+  name: string;
+  value: number;
+  quantity: number;
+  bgColor: string;
+  borderColor: string;
+}
+
+const initialChips: Chip[] = [
+  {
+    name: "Fichas Brancas",
+    value: 1000.0,
+    quantity: 100,
+    bgColor: "bg-white",
+    borderColor: "border-gray-300",
+  },
+  {
+    name: "Fichas Vermelhas",
+    value: 50.0,
+    quantity: 50,
+    bgColor: "bg-red-500",
+    borderColor: "border-red-600",
+  },
+  {
+    name: "Fichas Pretas",
+    value: 500.0,
+    quantity: 50,
+    bgColor: "bg-black",
+    borderColor: "border-gray-800",
+  },
+  {
+    name: "Fichas Azuis",
+    value: 100.0,
+    quantity: 50,
+    bgColor: "bg-blue-500",
+    borderColor: "border-blue-600",
+  },
+  {
+    name: "Fichas Verdes",
+    value: 250.0,
+    quantity: 50,
+    bgColor: "bg-green-500",
+    borderColor: "border-green-600",
+  },
+];
+
+export function ManagePlayers() {
+  const [numberOfPlayers, setNumberOfPlayers] = useState("");
+  const [initialStack, setInitialStack] = useState("");
+  const [chips, setChips] = useState<Chip[]>(initialChips);
+  const [editingChip, setEditingChip] = useState<string | null>(null);
+  const [editValues, setEditValues] = useState<{
+    value: string;
+    quantity: string;
+  }>({
+    value: "",
+    quantity: "",
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Aqui você pode processar os dados
+    console.log("Quantidade de jogadores:", numberOfPlayers);
+    console.log("Stack inicial:", initialStack);
+  };
+
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    }).format(value);
+  };
+
+  const handleEdit = (chip: Chip) => {
+    setEditingChip(chip.name);
+    setEditValues({
+      value: chip.value.toString(),
+      quantity: chip.quantity.toString(),
+    });
+  };
+
+  const handleSave = (chipName: string) => {
+    setChips((prevChips) =>
+      prevChips.map((chip) =>
+        chip.name === chipName
+          ? {
+              ...chip,
+              value: parseFloat(editValues.value) || chip.value,
+              quantity: parseInt(editValues.quantity) || chip.quantity,
+            }
+          : chip
+      )
+    );
+    setEditingChip(null);
+    setEditValues({ value: "", quantity: "" });
+  };
+
+  const handleCancel = () => {
+    setEditingChip(null);
+    setEditValues({ value: "", quantity: "" });
+  };
+
+  const handleReset = () => {
+    setChips(initialChips);
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="rounded-lg border bg-card p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-2xl font-semibold">Distribuição de Fichas</h2>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleReset}
+            className="text-xs"
+          >
+            Restaurar Padrão
+          </Button>
+        </div>
+        <div className="space-y-3">
+          {chips.map((chip) => (
+            <div
+              key={chip.name}
+              className="flex items-center justify-between p-2 rounded-md bg-muted/50"
+            >
+              <div className="flex items-center gap-3">
+                <div
+                  className={`w-8 h-8 rounded-full ${chip.bgColor} border-2 ${chip.borderColor}`}
+                ></div>
+                <span className="font-medium">{chip.name}</span>
+              </div>
+              <div className="flex items-center gap-4">
+                {editingChip === chip.name ? (
+                  <div className="flex items-center gap-2">
+                    <div className="flex flex-col gap-1 items-end">
+                      <div className="flex items-center gap-2">
+                        <Label htmlFor="value">Valor</Label>
+                        <Input
+                          type="number"
+                          min="0"
+                          step="0.01"
+                          value={editValues.value}
+                          onChange={(e) =>
+                            setEditValues({
+                              ...editValues,
+                              value: e.target.value,
+                            })
+                          }
+                          className="w-24 h-8 text-sm"
+                          placeholder="Valor"
+                        />
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Label htmlFor="quantity">Quantidade</Label>
+                        <Input
+                          type="number"
+                          min="0"
+                          value={editValues.quantity}
+                          onChange={(e) =>
+                            setEditValues({
+                              ...editValues,
+                              quantity: e.target.value,
+                            })
+                          }
+                          className="w-24 h-8 text-sm"
+                          placeholder="Quantidade"
+                        />
+                      </div>
+                    </div>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      onClick={() => handleSave(chip.name)}
+                      className="h-8 w-8"
+                    >
+                      <Check className="h-4 w-4 text-green-600" />
+                    </Button>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      onClick={handleCancel}
+                      className="h-8 w-8"
+                    >
+                      <X className="h-4 w-4 text-red-600" />
+                    </Button>
+                  </div>
+                ) : (
+                  <>
+                    <div className="text-right">
+                      <div className="font-semibold">
+                        {formatCurrency(chip.value)}
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        {chip.quantity} unidades
+                      </div>
+                    </div>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      onClick={() => handleEdit(chip)}
+                      className="h-8 w-8"
+                    >
+                      <Edit2 className="h-4 w-4" />
+                    </Button>
+                  </>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <h1 className="text-4xl font-bold tracking-tight">
+          Gerenciar Jogadores
+        </h1>
+        <p className="text-muted-foreground">
+          Adicione, edite e gerencie os jogadores das suas partidas de poker.
+        </p>
+      </div>
+
+      <form
+        onSubmit={handleSubmit}
+        className="rounded-lg border bg-card p-4 space-y-4"
+      >
+        <div className="space-y-2">
+          <Label htmlFor="numberOfPlayers">Quantidade de Jogadores</Label>
+          <Input
+            id="numberOfPlayers"
+            type="number"
+            min="1"
+            placeholder="Ex: 6"
+            value={numberOfPlayers}
+            onChange={(e) => setNumberOfPlayers(e.target.value)}
+            required
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="initialStack">Valor Inicial da Stack (R$)</Label>
+          <Input
+            id="initialStack"
+            type="number"
+            min="0"
+            step="0.01"
+            placeholder="Ex: 100.00"
+            value={initialStack}
+            onChange={(e) => setInitialStack(e.target.value)}
+            required
+          />
+        </div>
+
+        <div className="flex justify-end">
+          <Button type="submit" disabled={!numberOfPlayers || !initialStack}>
+            Calcular Fichas
+          </Button>
+        </div>
+      </form>
+    </div>
+  );
+}
