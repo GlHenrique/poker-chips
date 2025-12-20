@@ -1,0 +1,29 @@
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "mira",
+  "rsc": false,
+  "tsx": true,
+  "tailwind": {
+    "config": "",
+    "css": "src/index.css",
+    "baseColor": "gray",
+    "cssVariables": true,
+    "prefix": "",
+    "theme": "sky",
+    "radius": "medium"
+  },
+  "iconLibrary": "lucide",
+  "font": "inter",
+  "menu": {
+    "color": "inverted",
+    "accent": "subtle"
+  },
+  "aliases": {
+    "components": "@/components",
+    "utils": "@/lib/utils",
+    "ui": "@/components/ui",
+    "lib": "@/lib",
+    "hooks": "@/hooks"
+  },
+  "registries": {}
+}
