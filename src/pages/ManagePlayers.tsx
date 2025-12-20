@@ -132,8 +132,8 @@ export function ManagePlayers() {
             >
               <div className="flex items-center gap-3">
                 <div
-                  className={`w-8 h-8 rounded-full ${chip.bgColor} border-2 ${chip.borderColor}`}
-                ></div>
+                  className={`w-3 h-3 md:w-6 md:h-6 rounded-full ${chip.bgColor} border-2 ${chip.borderColor}`}
+                />
                 <span className="font-medium">{chip.name}</span>
               </div>
               <div className="flex items-center gap-4">
@@ -218,7 +218,7 @@ export function ManagePlayers() {
       </div>
 
       <div className="space-y-2">
-        <h1 className="text-4xl font-bold tracking-tight">
+        <h1 className="text-3xl font-bold tracking-tight">
           Gerenciar Jogadores
         </h1>
         <p className="text-muted-foreground">
