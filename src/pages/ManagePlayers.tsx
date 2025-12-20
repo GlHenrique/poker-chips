@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Edit2, Check, X } from "lucide-react";
+import { formatCurrency } from "@/utils/formatCurrency";
 
 interface Chip {
   name: string;
@@ -10,6 +11,20 @@ interface Chip {
   quantity: number;
   bgColor: string;
   borderColor: string;
+}
+
+interface ChipDistribution {
+  chipName: string;
+  chipValue: number;
+  chipBgColor: string;
+  chipBorderColor: string;
+  amount: number;
+}
+
+interface PlayerDistribution {
+  playerNumber: number;
+  totalValue: number;
+  chips: ChipDistribution[];
 }
 
 const initialChips: Chip[] = [
@@ -53,6 +68,8 @@ const initialChips: Chip[] = [
 export function ManagePlayers() {
   const [numberOfPlayers, setNumberOfPlayers] = useState("");
   const [initialStack, setInitialStack] = useState("");
+  const [smallBlind, setSmallBlind] = useState("50");
+  const [bigBlind, setBigBlind] = useState("100");
   const [chips, setChips] = useState<Chip[]>(initialChips);
   const [editingChip, setEditingChip] = useState<string | null>(null);
   const [editValues, setEditValues] = useState<{
@@ -62,20 +79,16 @@ export function ManagePlayers() {
     value: "",
     quantity: "",
   });
+  const [distribution, setDistribution] = useState<PlayerDistribution[] | null>(
+   null
+  );
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Aqui você pode processar os dados
-    console.log("Quantidade de jogadores:", numberOfPlayers);
-    console.log("Stack inicial:", initialStack);
+    // Lógica de cálculo será implementada aqui
+    setDistribution(null)
   };
 
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    }).format(value);
-  };
 
   const handleEdit = (chip: Chip) => {
     setEditingChip(chip.name);
@@ -250,19 +263,132 @@ export function ManagePlayers() {
             type="number"
             min="0"
             step="0.01"
-            placeholder="Ex: 100.00"
+            placeholder="Ex: 10000.00"
             value={initialStack}
             onChange={(e) => setInitialStack(e.target.value)}
             required
           />
+          <p className="text-xs text-muted-foreground">
+            {bigBlind && !isNaN(parseFloat(bigBlind)) && (
+              <>Recomendado: mínimo 100 big blinds ({formatCurrency(parseFloat(bigBlind) * 100)})</>
+            )}
+          </p>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="smallBlind">Small Blind (R$)</Label>
+            <Input
+              id="smallBlind"
+              type="number"
+              min="0"
+              step="0.01"
+              placeholder="Ex: 50.00"
+              value={smallBlind}
+              onChange={(e) => setSmallBlind(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="bigBlind">Big Blind (R$)</Label>
+            <Input
+              id="bigBlind"
+              type="number"
+              min="0"
+              step="0.01"
+              placeholder="Ex: 100.00"
+              value={bigBlind}
+              onChange={(e) => setBigBlind(e.target.value)}
+              required
+            />
+          </div>
         </div>
 
         <div className="flex justify-end">
-          <Button type="submit" disabled={!numberOfPlayers || !initialStack}>
+          <Button
+            type="submit"
+            disabled={
+              !numberOfPlayers ||
+              !initialStack ||
+              !smallBlind ||
+              !bigBlind ||
+              parseFloat(bigBlind) < parseFloat(smallBlind)
+            }
+          >
             Calcular Fichas
           </Button>
         </div>
       </form>
+
+      {distribution && distribution.length > 0 && (
+        <div className="rounded-lg border bg-card p-6">
+          <div className="mb-4">
+            <h2 className="text-2xl font-semibold mb-2">
+              Distribuição por Jogador
+            </h2>
+            <div className="flex gap-4 text-sm text-muted-foreground">
+              <span>
+                <strong className="text-foreground">Blinds:</strong> {formatCurrency(parseFloat(smallBlind))} / {formatCurrency(parseFloat(bigBlind))}
+              </span>
+              {bigBlind && !isNaN(parseFloat(bigBlind)) && parseFloat(bigBlind) > 0 && (
+                <span>
+                  <strong className="text-foreground">Stack:</strong> {formatCurrency(parseFloat(initialStack))} ({Math.round(parseFloat(initialStack) / parseFloat(bigBlind))} BB)
+                </span>
+              )}
+            </div>
+          </div>
+          <div className="space-y-4">
+            {distribution.map((player) => (
+              <div
+                key={player.playerNumber}
+                className="rounded-md border bg-muted/30 p-4"
+              >
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-lg font-semibold">
+                    Jogador {player.playerNumber}
+                  </h3>
+                  <span className="text-sm font-medium text-muted-foreground">
+                    Total: {formatCurrency(player.totalValue)}
+                  </span>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {player.chips.map((chip, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center gap-2 px-3 py-2 rounded-md bg-background border"
+                    >
+                      <div
+                        className={`w-4 h-4 rounded-full ${chip.chipBgColor} border ${chip.chipBorderColor}`}
+                      />
+                      <span className="text-sm font-medium">
+                        {chip.amount}x
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        {formatCurrency(chip.chipValue)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {distribution && distribution.length === 0 && (
+        <div className="rounded-lg border bg-card p-6">
+          <p className="text-muted-foreground text-center">
+            Não foi possível calcular a distribuição. Verifique:
+          </p>
+          <ul className="list-disc list-inside mt-2 text-sm text-muted-foreground space-y-1">
+            <li>Se há fichas suficientes para o valor solicitado</li>
+            <li>Se a stack inicial é pelo menos 100 big blinds (recomendado)</li>
+            <li>Se há fichas pequenas o suficiente para o small blind</li>
+            <li>Se o big blind é maior ou igual ao small blind</li>
+          </ul>
+        </div>
+      )}
     </div>
   );
 }
