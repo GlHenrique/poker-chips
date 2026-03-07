@@ -2,6 +2,11 @@ import { useState, type FormEvent } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { Edit2, Check, X } from "lucide-react";
 import { formatCurrency } from "@/utils/formatCurrency";
 
@@ -9,14 +14,14 @@ interface Chip {
   name: string;
   value: number;
   quantity: number;
-  bgColor: string;
+  color: string;
   borderColor: string;
 }
 
 interface ChipDistribution {
   chipName: string;
   chipValue: number;
-  chipBgColor: string;
+  chipColor: string;
   chipBorderColor: string;
   amount: number;
 }
@@ -32,38 +37,47 @@ const initialChips: Chip[] = [
     name: "Fichas Brancas",
     value: 1000.0,
     quantity: 100,
-    bgColor: "bg-white",
-    borderColor: "border-gray-300",
+    color: "#ffffff",
+    borderColor: "#d1d5db",
   },
   {
     name: "Fichas Vermelhas",
     value: 50.0,
     quantity: 50,
-    bgColor: "bg-red-500",
-    borderColor: "border-red-600",
+    color: "#ef4444",
+    borderColor: "#b91c1c",
   },
   {
     name: "Fichas Pretas",
     value: 500.0,
     quantity: 50,
-    bgColor: "bg-black",
-    borderColor: "border-gray-800",
+    color: "#020617",
+    borderColor: "#020617",
   },
   {
     name: "Fichas Azuis",
     value: 100.0,
     quantity: 50,
-    bgColor: "bg-blue-500",
-    borderColor: "border-blue-600",
+    color: "#3b82f6",
+    borderColor: "#1d4ed8",
   },
   {
     name: "Fichas Verdes",
     value: 250.0,
     quantity: 50,
-    bgColor: "bg-green-500",
-    borderColor: "border-green-600",
+    color: "#22c55e",
+    borderColor: "#16a34a",
   },
 ];
+
+function getContrastTextColor(hex: string): string {
+  const n = hex.replace("#", "");
+  const r = parseInt(n.slice(0, 2), 16) / 255;
+  const g = parseInt(n.slice(2, 4), 16) / 255;
+  const b = parseInt(n.slice(4, 6), 16) / 255;
+  const luminance = 0.299 * r + 0.587 * g + 0.114 * b;
+  return luminance > 0.5 ? "#0f172a" : "#f8fafc";
+}
 
 export function ManagePlayers() {
   const [numberOfPlayers, setNumberOfPlayers] = useState("");
@@ -73,11 +87,15 @@ export function ManagePlayers() {
   const [chips, setChips] = useState<Chip[]>(initialChips);
   const [editingChip, setEditingChip] = useState<string | null>(null);
   const [editValues, setEditValues] = useState<{
+    name: string;
     value: string;
     quantity: string;
+    color: string;
   }>({
+    name: "",
     value: "",
     quantity: "",
+    color: "#ffffff",
   });
   const [distribution, setDistribution] = useState<PlayerDistribution[] | null>(
     null,
@@ -204,7 +222,7 @@ export function ManagePlayers() {
         playerChipsTemplate.push({
           chipName: chip.name,
           chipValue: chip.value,
-          chipBgColor: chip.bgColor,
+          chipColor: chip.color,
           chipBorderColor: chip.borderColor,
           amount: qty,
         });
@@ -237,8 +255,10 @@ export function ManagePlayers() {
   const handleEdit = (chip: Chip) => {
     setEditingChip(chip.name);
     setEditValues({
+      name: chip.name,
       value: chip.value.toString(),
       quantity: chip.quantity.toString(),
+      color: chip.color,
     });
   };
 
@@ -249,19 +269,22 @@ export function ManagePlayers() {
         chip.name === chipName
           ? {
               ...chip,
+              name: editValues.name || chip.name,
               value: parseFloat(editValues.value) || chip.value,
               quantity: parseInt(editValues.quantity) || chip.quantity,
+              color: editValues.color || chip.color,
+              borderColor: editValues.color || chip.borderColor,
             }
           : chip,
       ),
     );
     setEditingChip(null);
-    setEditValues({ value: "", quantity: "" });
+    setEditValues({ value: "", quantity: "", color: "", name: "" });
   };
 
   const handleCancel = () => {
     setEditingChip(null);
-    setEditValues({ value: "", quantity: "" });
+    setEditValues({ value: "", quantity: "", color: "", name: "" });
   };
 
   const handleReset = () => {
@@ -299,7 +322,11 @@ export function ManagePlayers() {
             >
               <div className="flex items-center gap-3">
                 <div
-                  className={`w-3 h-3 md:w-6 md:h-6 rounded-full ${chip.bgColor} border-2 ${chip.borderColor}`}
+                  className="w-3 h-3 md:w-6 md:h-6 rounded-full border-2"
+                  style={{
+                    backgroundColor: chip.color,
+                    borderColor: chip.borderColor,
+                  }}
                 />
                 <span className="font-medium">{chip.name}</span>
               </div>
@@ -307,6 +334,22 @@ export function ManagePlayers() {
                 {editingChip === chip.name ? (
                   <div className="flex items-center gap-2">
                     <div className="flex flex-col gap-1 items-end">
+                      <div className="flex items-center gap-2">
+                        <Label htmlFor={`name-${chip.name}`}>Nome</Label>
+                        <Input
+                          id={`name-${chip.name}`}
+                          type="text"
+                          value={editValues.name}
+                          onChange={(e) =>
+                            setEditValues({
+                              ...editValues,
+                              name: e.target.value,
+                            })
+                          }
+                          className="w-32 h-8 text-sm"
+                          placeholder="Nome"
+                        />
+                      </div>
                       <div className="flex items-center gap-2">
                         <Label htmlFor="value">Valor</Label>
                         <Input
@@ -338,6 +381,21 @@ export function ManagePlayers() {
                           }
                           className="w-24 h-8 text-sm"
                           placeholder="Quantidade"
+                        />
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Label htmlFor={`color-${chip.name}`}>Cor</Label>
+                        <input
+                          id={`color-${chip.name}`}
+                          type="color"
+                          value={editValues.color}
+                          onChange={(e) =>
+                            setEditValues({
+                              ...editValues,
+                              color: e.target.value,
+                            })
+                          }
+                          className="h-8 w-10 rounded-md border border-border bg-transparent cursor-pointer"
                         />
                       </div>
                     </div>
@@ -551,20 +609,35 @@ export function ManagePlayers() {
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {player.chips.map((chip, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center gap-2 px-3 py-2 rounded-md bg-background border"
-                    >
-                      <div
-                        className={`w-4 h-4 rounded-full ${chip.chipBgColor} border ${chip.chipBorderColor}`}
-                      />
-                      <span className="text-sm font-medium">
-                        {chip.amount}x
-                      </span>
-                      <span className="text-xs text-muted-foreground">
-                        {formatCurrency(chip.chipValue)}
-                      </span>
-                    </div>
+                    <Tooltip key={index}>
+                      <TooltipTrigger asChild>
+                        <div className="flex items-center gap-2 px-3 py-2 rounded-md bg-background border cursor-default">
+                          <div
+                            className="w-4 h-4 rounded-full border"
+                            style={{
+                              backgroundColor: chip.chipColor,
+                              borderColor: chip.chipBorderColor,
+                            }}
+                          />
+                          <span className="text-sm font-medium">
+                            {chip.amount}x
+                          </span>
+                          <span className="text-xs text-muted-foreground">
+                            {formatCurrency(chip.chipValue)}
+                          </span>
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent
+                        className="border-0"
+                        style={{
+                          backgroundColor: chip.chipColor,
+                          color: getContrastTextColor(chip.chipColor),
+                          borderColor: chip.chipBorderColor,
+                        }}
+                      >
+                        <p>{chip.chipName}</p>
+                      </TooltipContent>
+                    </Tooltip>
                   ))}
                 </div>
               </div>
