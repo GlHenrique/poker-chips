@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/tooltip";
 import { Edit2, Check, X } from "lucide-react";
 import { formatCurrency } from "@/utils/formatCurrency";
+import { scrollToElementById } from "@/utils/scrollToElement";
 
 interface Chip {
   name: string;
@@ -244,6 +245,7 @@ export function ManagePlayers() {
       const result = tryWithReserve(reserve);
       if (result) {
         setDistribution(result);
+        scrollToElementById("distribution-result");
         return;
       }
     }
@@ -558,7 +560,8 @@ export function ManagePlayers() {
 
       {distribution && distribution.length > 0 && (
         <div
-          className={`rounded-lg border bg-card p-6 ${
+          id="distribution-result"
+          className={`scroll-mt-24 rounded-lg border bg-card p-6 ${
             isHidingDistribution ? "fade-out" : "fade-in-up"
           }`}
         >
