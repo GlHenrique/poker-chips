@@ -6,7 +6,7 @@ import { formatCurrency } from "@/utils/formatCurrency";
 import type { Chip } from "../types";
 import type { ChipEditValues } from "../types";
 
-interface ChipRowProps {
+type ChipRowProps = {
   chip: Chip;
   isEditing: boolean;
   editValues: ChipEditValues;
@@ -14,7 +14,7 @@ interface ChipRowProps {
   onEdit: () => void;
   onSave: () => void;
   onCancel: () => void;
-}
+};
 
 export function ChipRow({
   chip,

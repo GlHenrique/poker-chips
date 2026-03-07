@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { scrollToElementById } from "@/utils/scrollToElement";
-import { calculateDistribution } from "./calculateDistribution";
+import { calculateDistribution } from "../../utils/calculateDistribution";
 import { initialChips } from "./constants";
 import type { Chip, ChipEditValues, PlayerDistribution } from "./types";
 import {
@@ -26,7 +26,7 @@ export function ManagePlayers() {
   const [editingChip, setEditingChip] = useState<string | null>(null);
   const [editValues, setEditValues] = useState<ChipEditValues>(emptyEditValues);
   const [distribution, setDistribution] = useState<PlayerDistribution[] | null>(
-    null
+    null,
   );
   const [isHidingDistribution, setIsHidingDistribution] = useState(false);
 
@@ -78,8 +78,8 @@ export function ManagePlayers() {
               color: editValues.color || chip.color,
               borderColor: editValues.color || chip.borderColor,
             }
-          : chip
-      )
+          : chip,
+      ),
     );
     setEditingChip(null);
     setEditValues(emptyEditValues);
@@ -103,10 +103,12 @@ export function ManagePlayers() {
     setBigBlind("100");
   };
 
-  const withReset = <T,>(fn: (value: T) => void) => (value: T) => {
-    resetDistribution();
-    fn(value);
-  };
+  const withReset =
+    <T,>(fn: (value: T) => void) =>
+    (value: T) => {
+      resetDistribution();
+      fn(value);
+    };
 
   return (
     <div className="space-y-6 fade-in-up">

@@ -1,5 +1,8 @@
-import type { Chip } from "./types";
-import type { ChipDistribution, PlayerDistribution } from "./types";
+import type { Chip } from "../pages/ManagePlayers/types";
+import type {
+  ChipDistribution,
+  PlayerDistribution,
+} from "../pages/ManagePlayers/types";
 
 /**
  * Calcula a distribuição de fichas por jogador.
@@ -8,7 +11,7 @@ import type { ChipDistribution, PlayerDistribution } from "./types";
 export function calculateDistribution(
   chips: Chip[],
   players: number,
-  stackValue: number
+  stackValue: number,
 ): PlayerDistribution[] {
   if (!players || players <= 0 || isNaN(stackValue) || stackValue <= 0) {
     return [];
@@ -17,7 +20,7 @@ export function calculateDistribution(
   const stackCents = Math.round(stackValue * 100);
   const totalAvailableCents = chips.reduce(
     (sum, chip) => sum + Math.round(chip.value * 100) * chip.quantity,
-    0
+    0,
   );
   const totalRequiredCents = players * stackCents;
 
@@ -29,15 +32,16 @@ export function calculateDistribution(
   const chipValuesCents = sortedChips.map((c) => Math.round(c.value * 100));
   const reservePercents = [0.25, 0.2, 0.15, 0];
 
-  const tryWithReserve = (reservePercent: number): PlayerDistribution[] | null => {
+  const tryWithReserve = (
+    reservePercent: number,
+  ): PlayerDistribution[] | null => {
     const usageFactor = 1 - reservePercent;
     const maxPerPlayer = sortedChips.map((chip) =>
-      Math.floor((chip.quantity * usageFactor) / players)
+      Math.floor((chip.quantity * usageFactor) / players),
     );
     const maxTotalValueForAllPlayers = sortedChips.reduce(
-      (sum, _, idx) =>
-        sum + chipValuesCents[idx] * maxPerPlayer[idx] * players,
-      0
+      (sum, _, idx) => sum + chipValuesCents[idx] * maxPerPlayer[idx] * players,
+      0,
     );
 
     if (maxTotalValueForAllPlayers < totalRequiredCents) return null;
@@ -49,7 +53,7 @@ export function calculateDistribution(
       const valueCents = chipValuesCents[index];
       const maxByValue = Math.min(
         maxPerPlayer[index],
-        Math.floor(remaining / valueCents)
+        Math.floor(remaining / valueCents),
       );
       for (let qty = maxByValue; qty >= 0; qty--) {
         const newRemaining = remaining - qty * valueCents;

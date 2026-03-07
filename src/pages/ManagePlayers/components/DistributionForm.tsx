@@ -3,7 +3,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { formatCurrency } from "@/utils/formatCurrency";
 
-interface DistributionFormProps {
+type DistributionFormProps = {
   numberOfPlayers: string;
   initialStack: string;
   smallBlind: string;
@@ -14,7 +14,7 @@ interface DistributionFormProps {
   onBigBlindChange: (value: string) => void;
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   onClear: () => void;
-}
+};
 
 export function DistributionForm({
   numberOfPlayers,

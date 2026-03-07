@@ -3,7 +3,7 @@ import { ChipRow } from "./ChipRow";
 import type { Chip } from "../types";
 import type { ChipEditValues } from "../types";
 
-interface ChipConfigCardProps {
+type ChipConfigCardProps = {
   chips: Chip[];
   editingChip: string | null;
   editValues: ChipEditValues;
@@ -12,7 +12,7 @@ interface ChipConfigCardProps {
   onSave: (chipName: string) => void;
   onCancel: () => void;
   onReset: () => void;
-}
+};
 
 export function ChipConfigCard({
   chips,

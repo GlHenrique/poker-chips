@@ -1,6 +1,6 @@
-interface DistributionErrorProps {
+type DistributionErrorProps = {
   isHiding: boolean;
-}
+};
 
 export function DistributionError({ isHiding }: DistributionErrorProps) {
   return (
