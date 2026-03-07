@@ -83,6 +83,12 @@ export function ManagePlayers() {
     null
   );
 
+  const resetDistribution = () => {
+    if (distribution !== null) {
+      setDistribution(null);
+    }
+  };
+
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const players = parseInt(numberOfPlayers, 10);
@@ -232,6 +238,7 @@ export function ManagePlayers() {
   };
 
   const handleSave = (chipName: string) => {
+    resetDistribution();
     setChips((prevChips) =>
       prevChips.map((chip) =>
         chip.name === chipName
@@ -253,6 +260,7 @@ export function ManagePlayers() {
   };
 
   const handleReset = () => {
+    resetDistribution();
     setChips(initialChips);
   };
 
@@ -384,7 +392,10 @@ export function ManagePlayers() {
             min="1"
             placeholder="Ex: 6"
             value={numberOfPlayers}
-            onChange={(e) => setNumberOfPlayers(e.target.value)}
+            onChange={(e) => {
+              resetDistribution();
+              setNumberOfPlayers(e.target.value);
+            }}
             required
           />
         </div>
@@ -398,7 +409,10 @@ export function ManagePlayers() {
             step="0.01"
             placeholder="Ex: 10000.00"
             value={initialStack}
-            onChange={(e) => setInitialStack(e.target.value)}
+            onChange={(e) => {
+              resetDistribution();
+              setInitialStack(e.target.value);
+            }}
             required
           />
           <p className="text-xs text-muted-foreground">
@@ -418,7 +432,10 @@ export function ManagePlayers() {
               step="0.01"
               placeholder="Ex: 50.00"
               value={smallBlind}
-              onChange={(e) => setSmallBlind(e.target.value)}
+              onChange={(e) => {
+                resetDistribution();
+                setSmallBlind(e.target.value);
+              }}
               required
             />
           </div>
@@ -432,7 +449,10 @@ export function ManagePlayers() {
               step="0.01"
               placeholder="Ex: 100.00"
               value={bigBlind}
-              onChange={(e) => setBigBlind(e.target.value)}
+              onChange={(e) => {
+                resetDistribution();
+                setBigBlind(e.target.value);
+              }}
               required
             />
           </div>
