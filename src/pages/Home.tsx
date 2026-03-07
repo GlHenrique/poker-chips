@@ -2,7 +2,7 @@ import { Link } from "react-router";
 
 export function Home() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 fade-in-up">
       <div className="space-y-2">
         <h1 className="text-4xl font-bold tracking-tight">
           Bem-vindo ao Poker Chips

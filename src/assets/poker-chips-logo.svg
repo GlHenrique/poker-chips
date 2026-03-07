@@ -1,0 +1,51 @@
+<svg
+  width="260"
+  height="80"
+  viewBox="0 0 260 80"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <rect width="260" height="80" rx="16" fill="#050816" />
+
+  <g transform="translate(40,40)">
+    <circle r="26" fill="#111827" />
+    <circle r="24" fill="none" stroke="#F97316" stroke-width="6" />
+    <g stroke="#FBBF24" stroke-width="3" stroke-linecap="round">
+      <line x1="0" y1="-24" x2="0" y2="-19" />
+      <line x1="0" y1="24" x2="0" y2="19" />
+      <line x1="-24" y1="0" x2="-19" y2="0" />
+      <line x1="24" y1="0" x2="19" y2="0" />
+      <line x1="17" y1="17" x2="14" y2="14" />
+      <line x1="-17" y1="17" x2="-14" y2="14" />
+      <line x1="17" y1="-17" x2="14" y2="-14" />
+      <line x1="-17" y1="-17" x2="-14" y2="-14" />
+    </g>
+    <circle r="14" fill="#F97316" />
+    <path
+      d="M -5 10 L -5 -10 L 3 -10 C 8 -10 11 -7 11 -3 C 11 1 8 4 3 4 H -1 V 10 Z
+         M -1 0 H 3 C 5 0 7 -1.3 7 -3 C 7 -4.7 5 -6 3 -6 H -1 Z"
+      fill="#0B1120"
+    />
+  </g>
+
+  <text
+    x="90"
+    y="38"
+    fill="#F9FAFB"
+    font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
+    font-size="24"
+    font-weight="700"
+  >
+    Poker Chips
+  </text>
+
+  <text
+    x="90"
+    y="56"
+    fill="#9CA3AF"
+    font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
+    font-size="12"
+  >
+    Stack, blinds e fichas perfeitas
+  </text>
+</svg>
+

@@ -80,13 +80,24 @@ export function ManagePlayers() {
     quantity: "",
   });
   const [distribution, setDistribution] = useState<PlayerDistribution[] | null>(
-    null
+    null,
   );
+  const [isHidingDistribution, setIsHidingDistribution] = useState(false);
 
-  const resetDistribution = () => {
-    if (distribution !== null) {
-      setDistribution(null);
+  const resetDistribution = (withAnimation = false) => {
+    if (distribution === null) return;
+
+    if (withAnimation) {
+      setIsHidingDistribution(true);
+      setTimeout(() => {
+        setDistribution(null);
+        setIsHidingDistribution(false);
+      }, 250);
+      return;
     }
+
+    setDistribution(null);
+    setIsHidingDistribution(false);
   };
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
@@ -104,7 +115,7 @@ export function ManagePlayers() {
 
     const totalAvailableCents = chips.reduce(
       (sum, chip) => sum + Math.round(chip.value * 100) * chip.quantity,
-      0
+      0,
     );
 
     const totalRequiredCents = players * stackCents;
@@ -118,27 +129,27 @@ export function ManagePlayers() {
     // Ordena as fichas por valor crescente para priorizar fichas menores (50, 100, etc.)
     const sortedChips = [...chips].sort((a, b) => a.value - b.value);
     const chipValuesCents = sortedChips.map((chip) =>
-      Math.round(chip.value * 100)
+      Math.round(chip.value * 100),
     );
 
     // Tentativas de reserva de fichas no "banco"
     const reservePercents = [0.25, 0.2, 0.15, 0]; // 25%, 20%, 15% ou usar o máximo
 
     const tryWithReserve = (
-      reservePercent: number
+      reservePercent: number,
     ): PlayerDistribution[] | null => {
       const usageFactor = 1 - reservePercent;
 
       // Máximo de cada ficha que cada jogador pode receber, respeitando a reserva
       const maxPerPlayer = sortedChips.map((chip) =>
-        Math.floor((chip.quantity * usageFactor) / players)
+        Math.floor((chip.quantity * usageFactor) / players),
       );
 
       // Valor máximo possível para todos os jogadores com essa reserva
       const maxTotalValueForAllPlayers = sortedChips.reduce(
         (sum, _, idx) =>
           sum + chipValuesCents[idx] * maxPerPlayer[idx] * players,
-        0
+        0,
       );
 
       if (maxTotalValueForAllPlayers < totalRequiredCents) {
@@ -150,10 +161,7 @@ export function ManagePlayers() {
       // Backtracking para encontrar uma combinação onde:
       // soma(quantidadePorFicha[i] * valorFicha[i]) = stackCents
       // e quantidadePorFicha[i] <= maxPerPlayer[i]
-      const searchCombination = (
-        index: number,
-        remaining: number
-      ): boolean => {
+      const searchCombination = (index: number, remaining: number): boolean => {
         if (index === sortedChips.length) {
           return remaining === 0;
         }
@@ -161,7 +169,7 @@ export function ManagePlayers() {
         const valueCents = chipValuesCents[index];
         const maxByValue = Math.min(
           maxPerPlayer[index],
-          Math.floor(remaining / valueCents)
+          Math.floor(remaining / valueCents),
         );
 
         // Começa do máximo para esse tipo de ficha, para tentar usar mais fichas menores
@@ -208,7 +216,7 @@ export function ManagePlayers() {
           playerNumber: idx + 1,
           totalValue: stackCents / 100,
           chips: playerChipsTemplate.map((chip) => ({ ...chip })),
-        })
+        }),
       );
 
       return playersDistribution;
@@ -225,9 +233,6 @@ export function ManagePlayers() {
     // Se nenhuma combinação respeitando as reservas foi encontrada
     setDistribution([]);
   };
-
- 
-
 
   const handleEdit = (chip: Chip) => {
     setEditingChip(chip.name);
@@ -247,8 +252,8 @@ export function ManagePlayers() {
               value: parseFloat(editValues.value) || chip.value,
               quantity: parseInt(editValues.quantity) || chip.quantity,
             }
-          : chip
-      )
+          : chip,
+      ),
     );
     setEditingChip(null);
     setEditValues({ value: "", quantity: "" });
@@ -264,8 +269,16 @@ export function ManagePlayers() {
     setChips(initialChips);
   };
 
+  const handleClearForm = () => {
+    resetDistribution(true);
+    setNumberOfPlayers("");
+    setInitialStack("");
+    setSmallBlind("50");
+    setBigBlind("100");
+  };
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 fade-in-up">
       <div className="rounded-lg border bg-card p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-2xl font-semibold">Distribuição de Fichas</h2>
@@ -282,7 +295,7 @@ export function ManagePlayers() {
           {chips.map((chip) => (
             <div
               key={chip.name}
-              className="flex items-center justify-between p-2 rounded-md bg-muted/50"
+              className="flex items-center justify-between p-2 rounded-md bg-muted/20"
             >
               <div className="flex items-center gap-3">
                 <div
@@ -417,7 +430,10 @@ export function ManagePlayers() {
           />
           <p className="text-xs text-muted-foreground">
             {bigBlind && !isNaN(parseFloat(bigBlind)) && (
-              <>Recomendado: mínimo 100 big blinds ({formatCurrency(parseFloat(bigBlind) * 100)})</>
+              <>
+                Recomendado: mínimo 100 big blinds (
+                {formatCurrency(parseFloat(bigBlind) * 100)})
+              </>
             )}
           </p>
         </div>
@@ -458,7 +474,15 @@ export function ManagePlayers() {
           </div>
         </div>
 
-        <div className="flex justify-end">
+        <div className="flex justify-end gap-3">
+          <Button
+            type="button"
+            variant="outline"
+            className="border-accent text-accent-foreground hover:bg-accent/10"
+            onClick={handleClearForm}
+          >
+            Limpar
+          </Button>
           <Button
             type="submit"
             disabled={
@@ -475,27 +499,47 @@ export function ManagePlayers() {
       </form>
 
       {distribution && distribution.length > 0 && (
-        <div className="rounded-lg border bg-card p-6">
+        <div
+          className={`rounded-lg border bg-card p-6 ${
+            isHidingDistribution ? "fade-out" : "fade-in-up"
+          }`}
+        >
           <div className="mb-4">
             <h2 className="text-2xl font-semibold mb-2">
               Distribuição por Jogador
             </h2>
             <div className="flex gap-4 text-sm text-muted-foreground">
               <span>
-                <strong className="text-foreground">Blinds:</strong> {formatCurrency(parseFloat(smallBlind))} / {formatCurrency(parseFloat(bigBlind))}
+                <strong className="text-foreground">Blinds:</strong>{" "}
+                {formatCurrency(parseFloat(smallBlind))} /{" "}
+                {formatCurrency(parseFloat(bigBlind))}
               </span>
-              {bigBlind && !isNaN(parseFloat(bigBlind)) && parseFloat(bigBlind) > 0 && (
-                <span>
-                  <strong className="text-foreground">Stack:</strong> {formatCurrency(parseFloat(initialStack))} ({Math.round(parseFloat(initialStack) / parseFloat(bigBlind))} BB)
-                </span>
-              )}
+              {bigBlind &&
+                !isNaN(parseFloat(bigBlind)) &&
+                parseFloat(bigBlind) > 0 && (
+                  <span>
+                    <strong className="text-foreground">Stack:</strong>{" "}
+                    {formatCurrency(parseFloat(initialStack))} (
+                    {Math.round(
+                      parseFloat(initialStack) / parseFloat(bigBlind),
+                    )}{" "}
+                    BB)
+                  </span>
+                )}
             </div>
           </div>
           <div className="space-y-4">
-            {distribution.map((player) => (
+            {distribution.map((player, idx) => (
               <div
                 key={player.playerNumber}
-                className="rounded-md border bg-muted/30 p-4"
+                className={`rounded-md border bg-muted/30 p-4 ${
+                  isHidingDistribution ? "fade-out" : "fade-in-up"
+                }`}
+                style={
+                  !isHidingDistribution
+                    ? { animationDelay: `${idx * 70}ms` }
+                    : undefined
+                }
               >
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="text-lg font-semibold">
@@ -530,13 +574,19 @@ export function ManagePlayers() {
       )}
 
       {distribution && distribution.length === 0 && (
-        <div className="rounded-lg border bg-card p-6">
+        <div
+          className={`rounded-lg border bg-card p-6 ${
+            isHidingDistribution ? "fade-out" : "fade-in-up"
+          }`}
+        >
           <p className="text-muted-foreground text-center">
             Não foi possível calcular a distribuição. Verifique:
           </p>
           <ul className="list-disc list-inside mt-2 text-sm text-muted-foreground space-y-1">
             <li>Se há fichas suficientes para o valor solicitado</li>
-            <li>Se a stack inicial é pelo menos 100 big blinds (recomendado)</li>
+            <li>
+              Se a stack inicial é pelo menos 100 big blinds (recomendado)
+            </li>
             <li>Se há fichas pequenas o suficiente para o small blind</li>
             <li>Se o big blind é maior ou igual ao small blind</li>
           </ul>
