@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -80,14 +80,147 @@ export function ManagePlayers() {
     quantity: "",
   });
   const [distribution, setDistribution] = useState<PlayerDistribution[] | null>(
-   null
+    null
   );
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Lógica de cálculo será implementada aqui
-    setDistribution(null)
+    const players = parseInt(numberOfPlayers, 10);
+    const stackValue = parseFloat(initialStack);
+
+    if (!players || players <= 0 || isNaN(stackValue) || stackValue <= 0) {
+      setDistribution([]);
+      return;
+    }
+
+    // Trabalhar em centavos para evitar problemas de ponto flutuante
+    const stackCents = Math.round(stackValue * 100);
+
+    const totalAvailableCents = chips.reduce(
+      (sum, chip) => sum + Math.round(chip.value * 100) * chip.quantity,
+      0
+    );
+
+    const totalRequiredCents = players * stackCents;
+
+    // Se não há fichas suficientes para todos os stacks
+    if (totalRequiredCents > totalAvailableCents) {
+      setDistribution([]);
+      return;
+    }
+
+    // Ordena as fichas por valor crescente para priorizar fichas menores (50, 100, etc.)
+    const sortedChips = [...chips].sort((a, b) => a.value - b.value);
+    const chipValuesCents = sortedChips.map((chip) =>
+      Math.round(chip.value * 100)
+    );
+
+    // Tentativas de reserva de fichas no "banco"
+    const reservePercents = [0.25, 0.2, 0.15, 0]; // 25%, 20%, 15% ou usar o máximo
+
+    const tryWithReserve = (
+      reservePercent: number
+    ): PlayerDistribution[] | null => {
+      const usageFactor = 1 - reservePercent;
+
+      // Máximo de cada ficha que cada jogador pode receber, respeitando a reserva
+      const maxPerPlayer = sortedChips.map((chip) =>
+        Math.floor((chip.quantity * usageFactor) / players)
+      );
+
+      // Valor máximo possível para todos os jogadores com essa reserva
+      const maxTotalValueForAllPlayers = sortedChips.reduce(
+        (sum, _, idx) =>
+          sum + chipValuesCents[idx] * maxPerPlayer[idx] * players,
+        0
+      );
+
+      if (maxTotalValueForAllPlayers < totalRequiredCents) {
+        return null;
+      }
+
+      const combination = new Array<number>(sortedChips.length).fill(0);
+
+      // Backtracking para encontrar uma combinação onde:
+      // soma(quantidadePorFicha[i] * valorFicha[i]) = stackCents
+      // e quantidadePorFicha[i] <= maxPerPlayer[i]
+      const searchCombination = (
+        index: number,
+        remaining: number
+      ): boolean => {
+        if (index === sortedChips.length) {
+          return remaining === 0;
+        }
+
+        const valueCents = chipValuesCents[index];
+        const maxByValue = Math.min(
+          maxPerPlayer[index],
+          Math.floor(remaining / valueCents)
+        );
+
+        // Começa do máximo para esse tipo de ficha, para tentar usar mais fichas menores
+        for (let qty = maxByValue; qty >= 0; qty--) {
+          const newRemaining = remaining - qty * valueCents;
+
+          if (newRemaining < 0) continue;
+
+          combination[index] = qty;
+
+          if (searchCombination(index + 1, newRemaining)) {
+            return true;
+          }
+        }
+
+        return false;
+      };
+
+      const found = searchCombination(0, stackCents);
+
+      if (!found) {
+        return null;
+      }
+
+      // Monta as fichas que cada jogador vai receber (mesma combinação para todos)
+      const playerChipsTemplate: ChipDistribution[] = [];
+      for (let i = 0; i < sortedChips.length; i++) {
+        const qty = combination[i];
+        if (qty <= 0) continue;
+
+        const chip = sortedChips[i];
+        playerChipsTemplate.push({
+          chipName: chip.name,
+          chipValue: chip.value,
+          chipBgColor: chip.bgColor,
+          chipBorderColor: chip.borderColor,
+          amount: qty,
+        });
+      }
+
+      const playersDistribution: PlayerDistribution[] = Array.from(
+        { length: players },
+        (_, idx) => ({
+          playerNumber: idx + 1,
+          totalValue: stackCents / 100,
+          chips: playerChipsTemplate.map((chip) => ({ ...chip })),
+        })
+      );
+
+      return playersDistribution;
+    };
+
+    for (const reserve of reservePercents) {
+      const result = tryWithReserve(reserve);
+      if (result) {
+        setDistribution(result);
+        return;
+      }
+    }
+
+    // Se nenhuma combinação respeitando as reservas foi encontrada
+    setDistribution([]);
   };
+
+ 
 
 
   const handleEdit = (chip: Chip) => {
