@@ -25,6 +25,7 @@ export function Timer() {
     start,
     pause,
     stop,
+    clearSessions,
     inputDisabled,
   } = useTimer();
 
@@ -131,9 +132,20 @@ export function Timer() {
       </div>
 
       <div className="space-y-3">
-        <h2 className="text-lg font-semibold tracking-tight">
-          Histórico de execuções
-        </h2>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h2 className="text-lg font-semibold tracking-tight">
+            Histórico de execuções
+          </h2>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={clearSessions}
+            disabled={sessions.length === 0}
+          >
+            Limpar registros
+          </Button>
+        </div>
         {sessions.length === 0 ? (
           <p className="text-sm text-muted-foreground">
             Nenhuma execução registrada ainda.

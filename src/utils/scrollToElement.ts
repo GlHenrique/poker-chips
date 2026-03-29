@@ -4,8 +4,8 @@ const defaultOptions: ScrollIntoViewOptions = {
 };
 
 /**
- * Rola a página até o elemento com o id informado.
- * Agenda a execução para o próximo ciclo de renderização (após o DOM atualizar).
+ * Scrolls the page to the element with the given id.
+ * Schedules execution for the next render cycle (after the DOM updates).
  */
 export function scrollToElementById(
   id: string,

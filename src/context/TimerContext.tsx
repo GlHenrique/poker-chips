@@ -13,10 +13,10 @@ import {
 const DEFAULT_MINUTES = 10;
 const DEFAULT_SECONDS = 0;
 
-/** Ficheiro em `public/alarm-clock.mp3` — servido em `/alarm-clock.mp3`. */
+/** File at `public/alarm-clock.mp3` — served at `/alarm-clock.mp3`. */
 const ALARM_CLOCK_SRC = "/alarm-clock.mp3";
 
-/** Padrão mais perceptível; só funciona em browsers que expõem `navigator.vibrate` (ex.: Chrome no Android). Safari no iPhone não suporta vibração na Web. */
+/** More noticeable pattern; only works in browsers that expose `navigator.vibrate` (e.g. Chrome on Android). Safari on iPhone does not support vibration on the web. */
 function buzzAlarmEnd(): void {
   if (typeof navigator === "undefined") return;
   const v = navigator.vibrate;
@@ -39,8 +39,8 @@ function durationToTotalSeconds(minutes: number, seconds: number): number {
 }
 
 /**
- * `crypto.randomUUID()` só existe em contextos seguros (HTTPS ou localhost).
- * Em `http://192.168.x.x` (celular no Wi‑Fi) falha — usamos fallback.
+ * `crypto.randomUUID()` only exists in secure contexts (HTTPS or localhost).
+ * On `http://192.168.x.x` (phone on Wi‑Fi) it fails — we use a fallback.
  */
 function createSessionId(): string {
   const c = globalThis.crypto;
@@ -48,7 +48,7 @@ function createSessionId(): string {
     try {
       return c.randomUUID();
     } catch {
-      /* continua para o fallback */
+      /* continue to fallback */
     }
   }
   return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 12)}`;
@@ -69,6 +69,153 @@ export type TimerSession = {
 
 type TimerPhase = "idle" | "running" | "paused";
 
+const STORAGE_KEY = "poker-chips-timer-state";
+const STORAGE_VERSION = 1 as const;
+
+type PersistedTimerStateV1 = {
+  v: typeof STORAGE_VERSION;
+  sessions: TimerSession[];
+  activeSessionId: string | null;
+  phase: TimerPhase;
+  minutes: number;
+  seconds: number;
+  remainingSeconds: number;
+  /** `Date.now()` when `remainingSeconds` was saved; only meaningful when `phase === "running"`. */
+  runningWallMs: number | null;
+};
+
+type HydratedTimerBootstrap = {
+  minutes: number;
+  seconds: number;
+  remainingSeconds: number;
+  phase: TimerPhase;
+  sessions: TimerSession[];
+  activeSessionId: string | null;
+  showNaturalEndMessage: boolean;
+};
+
+function isTimerSessionRow(x: unknown): x is TimerSession {
+  if (typeof x !== "object" || x === null) return false;
+  const o = x as Record<string, unknown>;
+  return (
+    typeof o.id === "string" &&
+    typeof o.startedAt === "string" &&
+    (o.finishedAt === null || typeof o.finishedAt === "string")
+  );
+}
+
+function parsePersistedTimerState(raw: string): PersistedTimerStateV1 | null {
+  try {
+    const data = JSON.parse(raw) as unknown;
+    if (typeof data !== "object" || data === null) return null;
+    const o = data as Record<string, unknown>;
+    if (o.v !== STORAGE_VERSION) return null;
+    if (!Array.isArray(o.sessions) || !o.sessions.every(isTimerSessionRow)) return null;
+    if (typeof o.activeSessionId !== "string" && o.activeSessionId !== null) return null;
+    if (o.phase !== "idle" && o.phase !== "running" && o.phase !== "paused") return null;
+    if (
+      typeof o.minutes !== "number" ||
+      typeof o.seconds !== "number" ||
+      typeof o.remainingSeconds !== "number"
+    ) {
+      return null;
+    }
+    if (typeof o.runningWallMs !== "number" && o.runningWallMs !== null) return null;
+    return o as PersistedTimerStateV1;
+  } catch {
+    return null;
+  }
+}
+
+function readPersistedTimerState(): PersistedTimerStateV1 | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    return parsePersistedTimerState(raw);
+  } catch {
+    return null;
+  }
+}
+
+function writePersistedTimerState(state: PersistedTimerStateV1): void {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch {
+    /* storage quota / private mode */
+  }
+}
+
+function hydrateFromStorage(): HydratedTimerBootstrap {
+  const defaults: HydratedTimerBootstrap = {
+    minutes: DEFAULT_MINUTES,
+    seconds: DEFAULT_SECONDS,
+    remainingSeconds: durationToTotalSeconds(DEFAULT_MINUTES, DEFAULT_SECONDS),
+    phase: "idle",
+    sessions: [],
+    activeSessionId: null,
+    showNaturalEndMessage: false,
+  };
+
+  const saved = readPersistedTimerState();
+  if (!saved) return defaults;
+
+  let sessions = [...saved.sessions];
+  let phase = saved.phase;
+  let remainingSeconds = Math.max(0, Math.floor(saved.remainingSeconds));
+  let activeSessionId = saved.activeSessionId;
+  let showNaturalEndMessage = false;
+
+  if (phase === "running" && activeSessionId && saved.runningWallMs != null) {
+    const elapsed = Math.floor((Date.now() - saved.runningWallMs) / 1000);
+    remainingSeconds = Math.max(0, remainingSeconds - elapsed);
+    if (remainingSeconds === 0) {
+      const finishTime = new Date().toISOString();
+      const sid = activeSessionId;
+      sessions = sessions.map((row) =>
+        row.id === sid ? { ...row, finishedAt: finishTime } : row,
+      );
+      phase = "idle";
+      activeSessionId = null;
+      showNaturalEndMessage = true;
+    }
+  }
+
+  if (phase === "paused" || phase === "running") {
+    const hasOpenActive =
+      activeSessionId &&
+      sessions.some((s) => s.id === activeSessionId && s.finishedAt === null);
+    if (!hasOpenActive) {
+      phase = "idle";
+      activeSessionId = null;
+      if (remainingSeconds > 0) {
+        remainingSeconds = 0;
+      }
+    }
+  }
+
+  if (phase === "idle") {
+    const stillOpen = sessions.some((s) => s.finishedAt === null);
+    if (stillOpen) {
+      const now = new Date().toISOString();
+      sessions = sessions.map((s) =>
+        s.finishedAt === null ? { ...s, finishedAt: now } : s,
+      );
+    }
+  }
+
+  return {
+    minutes: saved.minutes,
+    seconds: clampSeconds(saved.seconds),
+    remainingSeconds,
+    phase,
+    sessions,
+    activeSessionId,
+    showNaturalEndMessage,
+  };
+}
+
 type TimerContextValue = {
   minutes: number;
   seconds: number;
@@ -83,23 +230,26 @@ type TimerContextValue = {
   start: () => void;
   pause: () => void;
   stop: () => void;
+  clearSessions: () => void;
   inputDisabled: boolean;
 };
 
 const TimerContext = createContext<TimerContextValue | null>(null);
 
 export function TimerProvider({ children }: { children: ReactNode }) {
-  const [minutes, setMinutes] = useState(DEFAULT_MINUTES);
-  const [seconds, setSeconds] = useState(DEFAULT_SECONDS);
-  const [remainingSeconds, setRemainingSeconds] = useState(
-    durationToTotalSeconds(DEFAULT_MINUTES, DEFAULT_SECONDS),
-  );
-  const [phase, setPhase] = useState<TimerPhase>("idle");
-  const [sessions, setSessions] = useState<TimerSession[]>([]);
-  const [showNaturalEndMessage, setShowNaturalEndMessage] = useState(false);
+  const [initial] = useState(() => hydrateFromStorage());
 
-  const activeSessionIdRef = useRef<string | null>(null);
-  /** Mantido entre toques: em mobile o áudio tem de ser “desbloqueado” no gesto Iniciar/Continuar. */
+  const [minutes, setMinutes] = useState(initial.minutes);
+  const [seconds, setSeconds] = useState(initial.seconds);
+  const [remainingSeconds, setRemainingSeconds] = useState(initial.remainingSeconds);
+  const [phase, setPhase] = useState<TimerPhase>(initial.phase);
+  const [sessions, setSessions] = useState<TimerSession[]>(initial.sessions);
+  const [showNaturalEndMessage, setShowNaturalEndMessage] = useState(
+    initial.showNaturalEndMessage,
+  );
+
+  const activeSessionIdRef = useRef<string | null>(initial.activeSessionId);
+  /** Kept across taps: on mobile the audio must be “unlocked” on the Start/Resume gesture. */
   const alarmAudioRef = useRef<HTMLAudioElement | null>(null);
 
   const stopAlarmClock = useCallback(() => {
@@ -110,8 +260,8 @@ export function TimerProvider({ children }: { children: ReactNode }) {
   }, []);
 
   /**
-   * iOS/Android bloqueiam play() sem gesto recente. No Iniciar, tocamos com volume 0 e pausamos
-   * para o mesmo elemento poder tocar no fim do timer.
+   * iOS/Android block play() without a recent gesture. On Start we play at volume 0 and pause
+   * so the same element can play when the timer ends.
    */
   const primeAlarmAudio = useCallback(() => {
     let a = alarmAudioRef.current;
@@ -129,7 +279,7 @@ export function TimerProvider({ children }: { children: ReactNode }) {
         a.volume = 1;
       })
       .catch(() => {
-        /* unlock falhou; ainda tentamos play no fim */
+        /* unlock failed; we still try play at the end */
       });
   }, []);
 
@@ -174,6 +324,19 @@ export function TimerProvider({ children }: { children: ReactNode }) {
     stopAlarmClock();
     setShowNaturalEndMessage(false);
   }, [stopAlarmClock]);
+
+  useEffect(() => {
+    writePersistedTimerState({
+      v: STORAGE_VERSION,
+      sessions,
+      activeSessionId: activeSessionIdRef.current,
+      phase,
+      minutes,
+      seconds,
+      remainingSeconds,
+      runningWallMs: phase === "running" ? Date.now() : null,
+    });
+  }, [sessions, phase, minutes, seconds, remainingSeconds]);
 
   useEffect(() => {
     if (phase !== "running") return;
@@ -289,6 +452,16 @@ export function TimerProvider({ children }: { children: ReactNode }) {
     setRemainingSeconds(0);
   }, []);
 
+  const clearSessions = useCallback(() => {
+    stopAlarmClock();
+    activeSessionIdRef.current = null;
+    setSessions([]);
+    if (phase === "running" || phase === "paused") {
+      setPhase("idle");
+      setRemainingSeconds(0);
+    }
+  }, [phase, stopAlarmClock]);
+
   const value = useMemo(
     (): TimerContextValue => ({
       minutes,
@@ -304,6 +477,7 @@ export function TimerProvider({ children }: { children: ReactNode }) {
       start,
       pause,
       stop,
+      clearSessions,
       inputDisabled: phase === "running",
     }),
     [
@@ -319,6 +493,7 @@ export function TimerProvider({ children }: { children: ReactNode }) {
       start,
       pause,
       stop,
+      clearSessions,
     ],
   );
 
@@ -330,7 +505,7 @@ export function TimerProvider({ children }: { children: ReactNode }) {
 export function useTimer() {
   const ctx = useContext(TimerContext);
   if (!ctx) {
-    throw new Error("useTimer deve ser usado dentro de TimerProvider");
+    throw new Error("useTimer must be used within a TimerProvider");
   }
   return ctx;
 }

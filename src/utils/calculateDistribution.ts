@@ -5,102 +5,102 @@ import type {
 } from "../pages/ManagePlayers/types";
 
 /**
- * Calcula a distribuição de fichas por jogador (todos recebem a mesma combinação).
- * Retorna array vazio se não for possível calcular.
+ * Computes per-player chip distribution (everyone gets the same combination).
+ * Returns an empty array if no valid distribution exists.
  */
 export function calculateDistribution(
   chips: Chip[],
   players: number,
   stackValue: number,
 ): PlayerDistribution[] {
-  // Valida entradas: número de jogadores e valor da stack devem ser válidos e positivos
+  // Validate inputs: player count and stack value must be valid and positive
   if (!players || players <= 0 || isNaN(stackValue) || stackValue <= 0) {
     return [];
   }
 
-  // Converte o valor da stack para centavos (evita erros de ponto flutuante)
+  // Convert stack value to cents (avoids floating-point errors)
   const stackCents = Math.round(stackValue * 100);
-  // Soma o valor total disponível: para cada tipo de ficha, (valor em centavos × quantidade)
+  // Total available value: for each chip type, (value in cents × quantity)
   const totalAvailableCents = chips.reduce(
     (sum, chip) => sum + Math.round(chip.value * 100) * chip.quantity,
     0,
   );
-  // Valor total necessário para dar a stack definida a todos os jogadores
+  // Total value needed to give each player the target stack
   const totalRequiredCents = players * stackCents;
 
-  // Se não há fichas suficientes no total, não é possível distribuir
+  // Not enough chips in the bank to distribute
   if (totalRequiredCents > totalAvailableCents) {
     return [];
   }
 
-  // Ordena as fichas do menor para o maior valor (prioriza usar fichas menores primeiro)
+  // Sort chips from lowest to highest denomination (prefer smaller chips first)
   const sortedChips = [...chips].sort((a, b) => a.value - b.value);
-  // Array com o valor de cada ficha em centavos (mesma ordem de sortedChips)
+  // Each chip’s value in cents (same order as sortedChips)
   const chipValuesCents = sortedChips.map((c) => Math.round(c.value * 100));
-  // Percentuais de reserva a testar: 25%, 20%, 15% e 0% (usa todo o estoque)
+  // Reserve levels to try: 25%, 20%, 15%, and 0% (use full stock)
   const reservePercents = [0.25, 0.2, 0.15, 0];
 
   /**
-   * Tenta encontrar uma combinação válida usando um percentual de reserva.
-   * A reserva deixa parte das fichas "no banco" (não distribuídas).
+   * Try to find a valid combination using a reserve percentage.
+   * Reserve keeps some chips “in the bank” (undistributed).
    */
   const tryWithReserve = (
     reservePercent: number,
   ): PlayerDistribution[] | null => {
-    // Fator de uso: ex. 0.75 significa que só 75% do estoque pode ser usado (25% reserva)
+    // Usage factor: e.g. 0.75 means only 75% of stock may be used (25% reserve)
     const usageFactor = 1 - reservePercent;
-    // Para cada tipo de ficha, máximo que cada jogador pode receber (divisão inteira)
+    // Per chip type, max each player can receive (integer division)
     const maxPerPlayer = sortedChips.map((chip) =>
       Math.floor((chip.quantity * usageFactor) / players),
     );
-    // Valor máximo que conseguimos dar a todos os jogadores com essa reserva
+    // Maximum value we can give all players combined with this reserve
     const maxTotalValueForAllPlayers = sortedChips.reduce(
       (sum, _, idx) => sum + chipValuesCents[idx] * maxPerPlayer[idx] * players,
       0,
     );
 
-    // Com essa reserva não dá para atingir o valor necessário; tenta outra
+    // This reserve cannot reach the required value; try another
     if (maxTotalValueForAllPlayers < totalRequiredCents) return null;
 
-    // Array que vai guardar a quantidade de cada tipo de ficha na combinação encontrada
+    // Holds the count per chip type in the combination we find
     const combination = new Array<number>(sortedChips.length).fill(0);
 
     /**
-     * Backtracking: busca uma combinação de quantidades por tipo de ficha tal que
-     * a soma (qty[i] * valor[i]) = remaining e cada qty[i] <= maxPerPlayer[i].
+     * Backtracking: find quantities per chip type such that
+     * sum(qty[i] * value[i]) = remaining and each qty[i] <= maxPerPlayer[i].
      */
     const searchCombination = (index: number, remaining: number): boolean => {
-      // Chegou ao fim dos tipos de ficha: sucesso só se o valor restante é zero
+      // End of chip types: success only if nothing left to cover
       if (index === sortedChips.length) return remaining === 0;
-      // Valor em centavos da ficha atual
+      // Current chip value in cents
       const valueCents = chipValuesCents[index];
-      // Máximo de fichas deste tipo que podemos usar: mínimo entre o permitido e o que falta
+      // Max chips of this type: min of per-player cap and what remaining allows
       const maxByValue = Math.min(
         maxPerPlayer[index],
         Math.floor(remaining / valueCents),
       );
-      // Tenta usar do máximo até zero fichas deste tipo (prioriza mais fichas menores)
+      // Try from max down to zero for this type (prefers more smaller chips)
       for (let qty = maxByValue; qty >= 0; qty--) {
-        // Quanto ainda falta após usar 'qty' fichas deste tipo
+        // What’s left after using `qty` chips of this type
         const newRemaining = remaining - qty * valueCents;
         if (newRemaining < 0) continue;
-        // Registra essa quantidade na combinação
+        // Record this quantity in the combination
         combination[index] = qty;
-        // Recursão: busca combinação para os próximos tipos com o valor restante
+        // Recurse: next types with the new remainder
         if (searchCombination(index + 1, newRemaining)) return true;
       }
-      // Nenhuma quantidade deste tipo levou a uma solução
+      // No quantity for this type led to a solution
       return false;
     };
 
-    // Tenta encontrar uma combinação que some exatamente stackCents
+    // Try to find a combination that sums exactly to stackCents
     if (!searchCombination(0, stackCents)) return null;
 
-    // Monta a lista de fichas que cada jogador recebe a partir da combinação encontrada
+    // Build each player’s chip list from the combination
     const playerChipsTemplate: ChipDistribution[] = [];
     for (let i = 0; i < sortedChips.length; i++) {
       const qty = combination[i];
-      // Ignora tipos de ficha com quantidade zero na combinação
+      // Skip chip types with zero quantity in the combination
       if (qty <= 0) continue;
       const chip = sortedChips[i];
       playerChipsTemplate.push({
@@ -112,7 +112,7 @@ export function calculateDistribution(
       });
     }
 
-    // Retorna um registro por jogador, todos com o mesmo template de fichas
+    // One record per player, all sharing the same chip template
     return Array.from({ length: players }, (_, idx) => ({
       playerNumber: idx + 1,
       totalValue: stackCents / 100,
@@ -120,12 +120,12 @@ export function calculateDistribution(
     }));
   };
 
-  // Tenta cada nível de reserva até encontrar uma combinação válida
+  // Try each reserve level until a valid combination is found
   for (const reserve of reservePercents) {
     const result = tryWithReserve(reserve);
     if (result) return result;
   }
 
-  // Nenhuma reserva permitiu uma combinação válida (ex.: não dá para montar o valor exato)
+  // No reserve level yielded a valid combination (e.g. exact value not reachable)
   return [];
 }
