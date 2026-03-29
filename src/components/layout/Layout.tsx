@@ -8,6 +8,8 @@ import LogoLight from "@/assets/poker-chips-logo-light.svg";
 export function Layout() {
   const location = useLocation();
   const isHome = location.pathname === "/";
+  const isManagePlayers = location.pathname === "/manage-players";
+  const isTimer = location.pathname === "/timer";
   const { theme } = useTheme();
 
   const isDark =
@@ -54,12 +56,22 @@ export function Layout() {
             <Link
               to="/manage-players"
               className={`hidden text-sm font-medium transition-colors md:inline-flex ${
-                !isHome
+                isManagePlayers
                   ? "text-foreground"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
               Jogadores
+            </Link>
+            <Link
+              to="/timer"
+              className={`hidden text-sm font-medium transition-colors md:inline-flex ${
+                isTimer
+                  ? "text-foreground"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              Timer
             </Link>
             <div className="hidden h-6 w-px bg-border md:block" />
             <ModeToggle />

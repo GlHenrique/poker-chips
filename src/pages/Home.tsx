@@ -22,6 +22,15 @@ export function Home() {
             Adicione e gerencie os jogadores das suas partidas.
           </p>
         </Link>
+        <Link
+          to="/timer"
+          className="rounded-lg border bg-card p-6 hover:bg-accent transition-colors cursor-pointer block"
+        >
+          <h3 className="text-lg font-semibold mb-2">Timer</h3>
+          <p className="text-sm text-muted-foreground">
+            Contador regressivo com iniciar, pausar e parar.
+          </p>
+        </Link>
       </div>
     </div>
   );
