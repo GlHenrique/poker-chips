@@ -4,7 +4,6 @@
     <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/GlHenrique/poker-chips/master/src/assets/poker-chips-logo-light.svg" />
     <img src="https://raw.githubusercontent.com/GlHenrique/poker-chips/master/src/assets/poker-chips-logo.svg" alt="Poker Chips Logo" height="120" />
   </picture>
-  <h1>🃏 Poker Chips</h1>
   <p><strong>Smartly manage poker chips — distribute, configure and time your games.</strong></p>
 
   <p>
@@ -31,6 +30,7 @@ Unlike generic calculators, the app lets you **fully configure the chip set** (n
 ## Features
 
 ### Chip Distribution
+
 - Configure custom chips with name, value, quantity and color
 - Calculate the ideal chip distribution per player based on stack value, small blind and big blind
 - Backtracking algorithm with multiple reserve levels to guarantee valid combinations
@@ -38,6 +38,7 @@ Unlike generic calculators, the app lets you **fully configure the chip set** (n
 - Chip config and form state persist throughout the session
 
 ### Timer
+
 - Configurable countdown (minutes and seconds)
 - Start, pause, resume and stop controls
 - Timer state persists in `localStorage` — keeps running even if you leave and return to the page
@@ -45,6 +46,7 @@ Unlike generic calculators, the app lets you **fully configure the chip set** (n
 - Run history with start and end timestamps
 
 ### Internationalization (i18n)
+
 - Full support for **Portuguese (pt-BR)**, **English (en)** and **Spanish (es)**
 - Automatic browser language detection
 - Language preference saved in `localStorage`
@@ -52,6 +54,7 @@ Unlike generic calculators, the app lets you **fully configure the chip set** (n
 - Default chip names automatically translated when switching languages
 
 ### UX & Accessibility
+
 - Light, dark and system-adaptive theme
 - Fully responsive layout — works on desktop and mobile
 - Smooth fade-in/out animations
@@ -61,16 +64,16 @@ Unlike generic calculators, the app lets you **fully configure the chip set** (n
 
 ## Tech Stack
 
-| Technology | Purpose |
-|---|---|
-| **React 19** | UI and state management |
-| **TypeScript** | Static typing across the entire project |
-| **Vite** | Bundler and dev server |
-| **Tailwind CSS v4** | Utility-first styling |
-| **Radix UI** | Accessible primitives (Dropdown, Tooltip, Label) |
-| **React Router v7** | Client-side routing |
-| **i18next + react-i18next** | Internationalization and language detection |
-| **Lucide React** | Icons |
+| Technology                  | Purpose                                          |
+| --------------------------- | ------------------------------------------------ |
+| **React 19**                | UI and state management                          |
+| **TypeScript**              | Static typing across the entire project          |
+| **Vite**                    | Bundler and dev server                           |
+| **Tailwind CSS v4**         | Utility-first styling                            |
+| **Radix UI**                | Accessible primitives (Dropdown, Tooltip, Label) |
+| **React Router v7**         | Client-side routing                              |
+| **i18next + react-i18next** | Internationalization and language detection      |
+| **Lucide React**            | Icons                                            |
 
 ---
 
