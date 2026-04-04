@@ -7,7 +7,7 @@
   <p><strong>Smartly manage poker chips — distribute, configure and time your games.</strong></p>
 
   <p>
-    <a href="https://poker-chips-lemon.vercel.app" target="_blank">
+    <a href="https://poker-chips-one.vercel.app" target="_blank">
       <img src="https://img.shields.io/badge/demo-live-brightgreen?style=for-the-badge&logo=vercel" alt="Live Demo" />
     </a>
     <img src="https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react" alt="React 19" />

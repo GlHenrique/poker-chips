@@ -7,7 +7,12 @@
     "home": "Home",
     "players": "Players",
     "timer": "Timer",
-    "back": "Go back"
+    "back": "Go back",
+    "timerPaused": "Paused",
+    "timerActiveTitle": "Timer: {{time}} — open",
+    "timerActiveAria": "Open timer page, {{time}} remaining",
+    "timerAlarmTitle": "Time is up — open timer",
+    "timerAlarmAria": "Timer finished — open timer page to dismiss or silence alarm"
   },
   "footer": {
     "rights": "All rights reserved."

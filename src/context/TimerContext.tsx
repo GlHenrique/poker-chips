@@ -448,6 +448,7 @@ export function TimerProvider({ children }: { children: ReactNode }) {
   }, [phase, stopAlarmClock]);
 
   const stop = useCallback(() => {
+    stopAlarmClock();
     const sid = activeSessionIdRef.current;
     if (sid) {
       const finishTime = new Date().toISOString();
@@ -460,7 +461,7 @@ export function TimerProvider({ children }: { children: ReactNode }) {
     }
     setPhase("idle");
     setRemainingSeconds(0);
-  }, []);
+  }, [stopAlarmClock]);
 
   const clearSessions = useCallback(() => {
     stopAlarmClock();

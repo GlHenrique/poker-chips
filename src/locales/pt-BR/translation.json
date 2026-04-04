@@ -7,7 +7,12 @@
     "home": "Início",
     "players": "Jogadores",
     "timer": "Timer",
-    "back": "Voltar"
+    "back": "Voltar",
+    "timerPaused": "Pausado",
+    "timerActiveTitle": "Timer: {{time}} — abrir",
+    "timerActiveAria": "Abrir página do timer, {{time}} restantes",
+    "timerAlarmTitle": "Tempo esgotado — abrir timer",
+    "timerAlarmAria": "Timer terminou — abra a página do timer ou silencie o alarme"
   },
   "footer": {
     "rights": "Todos os direitos reservados."
