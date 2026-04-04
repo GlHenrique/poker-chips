@@ -1,10 +1,10 @@
 <div align="center">
   <h1>🃏 Poker Chips</h1>
-  <p><strong>Gerencie fichas de poker de forma inteligente — distribua, configure e cronometre suas partidas.</strong></p>
+  <p><strong>Smartly manage poker chips — distribute, configure and time your games.</strong></p>
 
   <p>
     <a href="https://poker-chips-lemon.vercel.app" target="_blank">
-      <img src="https://img.shields.io/badge/demo-live-brightgreen?style=for-the-badge&logo=vercel" alt="Demo ao vivo" />
+      <img src="https://img.shields.io/badge/demo-live-brightgreen?style=for-the-badge&logo=vercel" alt="Live Demo" />
     </a>
     <img src="https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react" alt="React 19" />
     <img src="https://img.shields.io/badge/TypeScript-5.9-3178C6?style=for-the-badge&logo=typescript" alt="TypeScript" />
@@ -15,76 +15,76 @@
 
 ---
 
-## Sobre o projeto
+## About
 
-**Poker Chips** é uma aplicação web pensada para grupos que jogam poker presencialmente e precisam de uma forma prática de calcular a distribuição de fichas entre os jogadores e controlar o tempo de cada rodada.
+**Poker Chips** is a web app designed for groups that play poker in person and need a practical way to calculate chip distribution among players and track round durations.
 
-Diferente de calculadoras genéricas, o app permite **configurar as fichas disponíveis** (nome, valor, quantidade e cor), informar o valor inicial de cada stack e calcular automaticamente a melhor combinação de fichas por jogador — com um algoritmo de backtracking que respeita os limites de estoque.
+Unlike generic calculators, the app lets you **fully configure the chip set** (name, value, quantity and color), set each player's initial stack value, and automatically calculate the best chip combination per player — using a backtracking algorithm that respects stock limits.
 
 ---
 
-## Funcionalidades
+## Features
 
-### Distribuição de Fichas
-- Configura fichas personalizadas com nome, valor, quantidade e cor
-- Calcula a distribuição ideal de fichas por jogador a partir do valor da stack, small blind e big blind
-- Algoritmo de backtracking com múltiplos níveis de reserva para garantir combinações válidas
-- Exibe resultado visual com chips coloridos e tooltips informativos
-- Estado das fichas e do formulário persiste durante a sessão
+### Chip Distribution
+- Configure custom chips with name, value, quantity and color
+- Calculate the ideal chip distribution per player based on stack value, small blind and big blind
+- Backtracking algorithm with multiple reserve levels to guarantee valid combinations
+- Visual result display with colored chip badges and informative tooltips
+- Chip config and form state persist throughout the session
 
 ### Timer
-- Contador regressivo configurável (minutos e segundos)
-- Ações de iniciar, pausar, continuar e parar
-- Estado do timer persiste no `localStorage` — o tempo continua mesmo ao sair e voltar à página
-- Alarme sonoro e vibração (em dispositivos compatíveis) ao término
-- Histórico de execuções com data/hora de início e fim
+- Configurable countdown (minutes and seconds)
+- Start, pause, resume and stop controls
+- Timer state persists in `localStorage` — keeps running even if you leave and return to the page
+- Audio alarm and vibration (on supported devices) when time runs out
+- Run history with start and end timestamps
 
-### Internacionalização (i18n)
-- Suporte a **Português (pt-BR)**, **Inglês (en)** e **Espanhol (es)**
-- Detecção automática do idioma do navegador
-- Preferência salva no `localStorage`
-- Moedas adaptadas por idioma: **BRL**, **USD** e **EUR**
-- Nomes das fichas padrão traduzidos automaticamente ao trocar de idioma
+### Internationalization (i18n)
+- Full support for **Portuguese (pt-BR)**, **English (en)** and **Spanish (es)**
+- Automatic browser language detection
+- Language preference saved in `localStorage`
+- Currency adapted per language: **BRL**, **USD** and **EUR**
+- Default chip names automatically translated when switching languages
 
-### UX & Acessibilidade
-- Tema claro, escuro e automático (sistema)
-- Layout responsivo — funciona em desktop e mobile
-- Animações de entrada e saída suaves
-- `aria-live` no display do timer para leitores de tela
+### UX & Accessibility
+- Light, dark and system-adaptive theme
+- Fully responsive layout — works on desktop and mobile
+- Smooth fade-in/out animations
+- `aria-live` on the timer display for screen reader support
 
 ---
 
-## Stack tecnológica
+## Tech Stack
 
-| Tecnologia | Uso |
+| Technology | Purpose |
 |---|---|
-| **React 19** | Interface e gerenciamento de estado |
-| **TypeScript** | Tipagem estática em todo o projeto |
-| **Vite** | Bundler e dev server |
-| **Tailwind CSS v4** | Estilização utilitária |
-| **Radix UI** | Componentes acessíveis (Dropdown, Tooltip, Label) |
-| **React Router v7** | Roteamento client-side |
-| **i18next + react-i18next** | Internacionalização e detecção de idioma |
-| **Lucide React** | Ícones |
+| **React 19** | UI and state management |
+| **TypeScript** | Static typing across the entire project |
+| **Vite** | Bundler and dev server |
+| **Tailwind CSS v4** | Utility-first styling |
+| **Radix UI** | Accessible primitives (Dropdown, Tooltip, Label) |
+| **React Router v7** | Client-side routing |
+| **i18next + react-i18next** | Internationalization and language detection |
+| **Lucide React** | Icons |
 
 ---
 
-## Arquitetura
+## Project Structure
 
 ```
 src/
 ├── components/
 │   ├── app/
-│   │   ├── ThemeProvider/       # Contexto de tema (claro/escuro/sistema)
-│   │   ├── ToggleMode/          # Botão de alternância de tema
-│   │   └── LanguageSwitcher/    # Seletor de idioma com dropdown
+│   │   ├── ThemeProvider/       # Theme context (light/dark/system)
+│   │   ├── ToggleMode/          # Theme toggle button
+│   │   └── LanguageSwitcher/    # Language selector dropdown
 │   ├── layout/
-│   │   └── Layout.tsx           # Header, nav, footer e Outlet
-│   └── ui/                      # Componentes base (Button, Input, Label…)
+│   │   └── Layout.tsx           # Header, nav, footer and Outlet
+│   └── ui/                      # Base components (Button, Input, Label…)
 ├── context/
-│   └── TimerContext.tsx          # Estado global do timer com persistência
+│   └── TimerContext.tsx          # Global timer state with persistence
 ├── hooks/
-│   └── useCurrencyFormatter.ts  # Formatação de moeda reativa ao idioma
+│   └── useCurrencyFormatter.ts  # Currency formatting reactive to language
 ├── locales/
 │   ├── pt-BR/translation.json
 │   ├── en/translation.json
@@ -94,7 +94,7 @@ src/
 │   ├── Timer.tsx
 │   └── ManagePlayers/
 │       ├── index.tsx
-│       ├── constants.ts         # Fichas iniciais com suporte a i18n
+│       ├── constants.ts         # Default chips with i18n support
 │       ├── types.ts
 │       └── components/
 │           ├── ChipConfigCard.tsx
@@ -103,7 +103,7 @@ src/
 │           ├── DistributionResult.tsx
 │           └── DistributionError.tsx
 └── utils/
-    ├── calculateDistribution.ts  # Algoritmo de backtracking
+    ├── calculateDistribution.ts  # Backtracking algorithm
     ├── formatCurrency.ts
     ├── color.ts
     └── scrollToElement.ts
@@ -111,57 +111,57 @@ src/
 
 ---
 
-## Algoritmo de distribuição
+## Distribution Algorithm
 
-O cálculo de fichas usa **backtracking com múltiplos níveis de reserva**:
+The chip calculation uses **backtracking with multiple reserve levels**:
 
-1. Converte todos os valores para centavos (evita erros de ponto flutuante)
-2. Testa 4 níveis de reserva do estoque: 25%, 20%, 15% e 0%
-3. Para cada nível, tenta encontrar uma combinação exata de fichas que some ao valor da stack usando busca recursiva
-4. Retorna a primeira combinação válida encontrada — ou uma lista vazia se nenhuma for possível
+1. Converts all values to cents to avoid floating-point errors
+2. Tests 4 stock reserve levels: 25%, 20%, 15% and 0%
+3. For each level, recursively searches for an exact chip combination that sums to the target stack value
+4. Returns the first valid combination found — or an empty array if none is possible
 
 ---
 
-## Como executar localmente
+## Running Locally
 
-**Pré-requisitos:** Node.js 20+ e pnpm
+**Requirements:** Node.js 20+ and pnpm
 
 ```bash
-# Clone o repositório
+# Clone the repository
 git clone https://github.com/GlHenrique/poker-chips.git
 cd poker-chips
 
-# Instale as dependências
+# Install dependencies
 pnpm install
 
-# Inicie o servidor de desenvolvimento
+# Start the development server
 pnpm dev
 ```
 
-A aplicação estará disponível em `http://localhost:5173`.
+The app will be available at `http://localhost:5173`.
 
 ```bash
-# Build de produção
+# Production build
 pnpm build
 
-# Preview do build
+# Preview the build
 pnpm preview
 ```
 
 ---
 
-## Deploy
+## Deployment
 
-O projeto está configurado para deploy automático na **Vercel** via `vercel.json` com rewrite de todas as rotas para `index.html` (necessário para o roteamento client-side do React Router).
+The project is configured for automatic deployment on **Vercel** via `vercel.json`, which rewrites all routes to `index.html` — required for React Router's client-side routing to work correctly.
 
 ---
 
-## Licença
+## License
 
-Distribuído sob a licença MIT. Veja [`LICENSE`](LICENSE) para mais informações.
+Distributed under the MIT License. See [`LICENSE`](LICENSE) for more information.
 
 ---
 
 <div align="center">
-  <p>Feito com ♠ por <a href="https://github.com/GlHenrique">GlHenrique</a></p>
+  <p>Made with ♠ by <a href="https://github.com/GlHenrique">GlHenrique</a></p>
 </div>
