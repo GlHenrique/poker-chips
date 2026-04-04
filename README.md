@@ -1,4 +1,9 @@
 <div align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/GlHenrique/poker-chips/master/src/assets/poker-chips-logo.svg" />
+    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/GlHenrique/poker-chips/master/src/assets/poker-chips-logo-light.svg" />
+    <img src="https://raw.githubusercontent.com/GlHenrique/poker-chips/master/src/assets/poker-chips-logo.svg" alt="Poker Chips Logo" height="120" />
+  </picture>
   <h1>🃏 Poker Chips</h1>
   <p><strong>Smartly manage poker chips — distribute, configure and time your games.</strong></p>
 
