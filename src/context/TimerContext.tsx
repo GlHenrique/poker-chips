@@ -110,9 +110,12 @@ function parsePersistedTimerState(raw: string): PersistedTimerStateV1 | null {
     if (typeof data !== "object" || data === null) return null;
     const o = data as Record<string, unknown>;
     if (o.v !== STORAGE_VERSION) return null;
-    if (!Array.isArray(o.sessions) || !o.sessions.every(isTimerSessionRow)) return null;
-    if (typeof o.activeSessionId !== "string" && o.activeSessionId !== null) return null;
-    if (o.phase !== "idle" && o.phase !== "running" && o.phase !== "paused") return null;
+    if (!Array.isArray(o.sessions) || !o.sessions.every(isTimerSessionRow))
+      return null;
+    if (typeof o.activeSessionId !== "string" && o.activeSessionId !== null)
+      return null;
+    if (o.phase !== "idle" && o.phase !== "running" && o.phase !== "paused")
+      return null;
     if (
       typeof o.minutes !== "number" ||
       typeof o.seconds !== "number" ||
@@ -120,7 +123,8 @@ function parsePersistedTimerState(raw: string): PersistedTimerStateV1 | null {
     ) {
       return null;
     }
-    if (typeof o.runningWallMs !== "number" && o.runningWallMs !== null) return null;
+    if (typeof o.runningWallMs !== "number" && o.runningWallMs !== null)
+      return null;
     return o as PersistedTimerStateV1;
   } catch {
     return null;
@@ -241,7 +245,9 @@ export function TimerProvider({ children }: { children: ReactNode }) {
 
   const [minutes, setMinutes] = useState(initial.minutes);
   const [seconds, setSeconds] = useState(initial.seconds);
-  const [remainingSeconds, setRemainingSeconds] = useState(initial.remainingSeconds);
+  const [remainingSeconds, setRemainingSeconds] = useState(
+    initial.remainingSeconds,
+  );
   const [phase, setPhase] = useState<TimerPhase>(initial.phase);
   const [sessions, setSessions] = useState<TimerSession[]>(initial.sessions);
   const [showNaturalEndMessage, setShowNaturalEndMessage] = useState(
@@ -260,8 +266,9 @@ export function TimerProvider({ children }: { children: ReactNode }) {
   }, []);
 
   /**
-   * iOS/Android block play() without a recent gesture. On Start we play at volume 0 and pause
+   * iOS/Android block play() without a recent gesture. On Start we play muted and pause
    * so the same element can play when the timer ends.
+   * iOS Safari often ignores volume=0 for the first frames; `muted` reliably avoids audible output.
    */
   const primeAlarmAudio = useCallback(() => {
     let a = alarmAudioRef.current;
@@ -270,15 +277,17 @@ export function TimerProvider({ children }: { children: ReactNode }) {
       a.preload = "auto";
       alarmAudioRef.current = a;
     }
-    a.volume = 0;
+    a.muted = true;
+    a.volume = 1;
     void a
       .play()
       .then(() => {
         a.pause();
         a.currentTime = 0;
-        a.volume = 1;
+        a.muted = false;
       })
       .catch(() => {
+        a.muted = false;
         /* unlock failed; we still try play at the end */
       });
   }, []);
@@ -287,6 +296,7 @@ export function TimerProvider({ children }: { children: ReactNode }) {
     const play = (el: HTMLAudioElement) => {
       el.pause();
       el.currentTime = 0;
+      el.muted = false;
       el.volume = 1;
       void el
         .play()
