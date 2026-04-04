@@ -1,0 +1,35 @@
+<svg
+  width="64"
+  height="64"
+  viewBox="0 0 64 64"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <!-- Background -->
+  <rect width="64" height="64" rx="14" fill="#050816" />
+
+  <!-- Chip outer ring -->
+  <circle cx="32" cy="32" r="26" fill="#111827" />
+  <circle cx="32" cy="32" r="24" fill="none" stroke="#F97316" stroke-width="6" />
+
+  <!-- Notches -->
+  <g stroke="#FBBF24" stroke-width="3" stroke-linecap="round">
+    <line x1="32" y1="8"  x2="32" y2="13" />
+    <line x1="32" y1="56" x2="32" y2="51" />
+    <line x1="8"  y1="32" x2="13" y2="32" />
+    <line x1="56" y1="32" x2="51" y2="32" />
+    <line x1="49" y1="15" x2="46" y2="18" />
+    <line x1="15" y1="49" x2="18" y2="46" />
+    <line x1="49" y1="49" x2="46" y2="46" />
+    <line x1="15" y1="15" x2="18" y2="18" />
+  </g>
+
+  <!-- Chip center -->
+  <circle cx="32" cy="32" r="14" fill="#F97316" />
+
+  <!-- Letter P -->
+  <path
+    d="M 27 42 L 27 22 L 35 22 C 40 22 43 25 43 29 C 43 33 40 36 35 36 H 31 V 42 Z
+       M 31 32 H 35 C 37 32 39 30.7 39 29 C 39 27.3 37 26 35 26 H 31 Z"
+    fill="#0B1120"
+  />
+</svg>
