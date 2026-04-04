@@ -1,4 +1,3 @@
-import type { TFunction } from "i18next";
 import type { Chip } from "./types";
 
 export const chipDefaults = [
@@ -9,9 +8,9 @@ export const chipDefaults = [
   { nameKey: "initialChips.green", value: 250.0, quantity: 50, color: "#22c55e", borderColor: "#16a34a" },
 ] as const;
 
-export function getInitialChips(t: TFunction): Chip[] {
+export function getInitialChips(): Chip[] {
   return chipDefaults.map((chip) => ({
     ...chip,
-    name: t(chip.nameKey),
+    name: chip.nameKey,
   }));
 }

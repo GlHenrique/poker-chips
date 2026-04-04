@@ -4,6 +4,8 @@ import type { Chip } from "../types";
 import type { ChipEditValues } from "../types";
 import { useTranslation } from "react-i18next";
 
+const chipKey = (chip: Chip) => chip.nameKey ?? chip.name;
+
 type ChipConfigCardProps = {
   chips: Chip[];
   editingChip: string | null;
@@ -45,13 +47,13 @@ export function ChipConfigCard({
       <div className="space-y-3">
         {chips.map((chip) => (
           <ChipRow
-            key={chip.name}
+            key={chipKey(chip)}
             chip={chip}
-            isEditing={editingChip === chip.name}
+            isEditing={editingChip === chipKey(chip)}
             editValues={editValues}
             onEditValuesChange={onEditValuesChange}
             onEdit={() => onEdit(chip)}
-            onSave={() => onSave(chip.name)}
+            onSave={() => onSave(chipKey(chip))}
             onCancel={onCancel}
           />
         ))}

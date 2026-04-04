@@ -1,4 +1,4 @@
-import { useState, useEffect, type FormEvent } from "react";
+import { useState, useMemo, type FormEvent } from "react";
 import { scrollToElementById } from "@/utils/scrollToElement";
 import { calculateDistribution } from "../../utils/calculateDistribution";
 import { getInitialChips } from "./constants";
@@ -18,13 +18,15 @@ const emptyEditValues: ChipEditValues = {
   color: "#ffffff",
 };
 
+const chipKey = (chip: Chip) => chip.nameKey ?? chip.name;
+
 export function ManagePlayers() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const [numberOfPlayers, setNumberOfPlayers] = useState("");
   const [initialStack, setInitialStack] = useState("");
   const [smallBlind, setSmallBlind] = useState("50");
   const [bigBlind, setBigBlind] = useState("100");
-  const [chips, setChips] = useState<Chip[]>(() => getInitialChips(t));
+  const [chips, setChips] = useState<Chip[]>(getInitialChips);
   const [editingChip, setEditingChip] = useState<string | null>(null);
   const [editValues, setEditValues] = useState<ChipEditValues>(emptyEditValues);
   const [distribution, setDistribution] = useState<PlayerDistribution[] | null>(
@@ -32,14 +34,14 @@ export function ManagePlayers() {
   );
   const [isHidingDistribution, setIsHidingDistribution] = useState(false);
 
-  // Re-translate chip names that still use a translation key when language changes
-  useEffect(() => {
-    setChips((prev) =>
-      prev.map((chip) =>
+  // Derive translated names at render time — no effect needed
+  const displayChips = useMemo(
+    () =>
+      chips.map((chip) =>
         chip.nameKey ? { ...chip, name: t(chip.nameKey) } : chip,
       ),
-    );
-  }, [i18n.language, t]);
+    [chips, t],
+  );
 
   const resetDistribution = (withAnimation = false) => {
     if (distribution === null) return;
@@ -59,7 +61,7 @@ export function ManagePlayers() {
     e.preventDefault();
     const players = parseInt(numberOfPlayers, 10);
     const stackValue = parseFloat(initialStack);
-    const result = calculateDistribution(chips, players, stackValue);
+    const result = calculateDistribution(displayChips, players, stackValue);
     setDistribution(result);
     if (result.length > 0) {
       scrollToElementById("distribution-result");
@@ -67,7 +69,7 @@ export function ManagePlayers() {
   };
 
   const handleEdit = (chip: Chip) => {
-    setEditingChip(chip.name);
+    setEditingChip(chipKey(chip));
     setEditValues({
       name: chip.name,
       value: chip.value.toString(),
@@ -76,11 +78,11 @@ export function ManagePlayers() {
     });
   };
 
-  const handleSave = (chipName: string) => {
+  const handleSave = (key: string) => {
     resetDistribution();
     setChips((prev) =>
       prev.map((chip) =>
-        chip.name === chipName
+        chipKey(chip) === key
           ? {
               ...chip,
               name: editValues.name || chip.name,
@@ -104,7 +106,7 @@ export function ManagePlayers() {
 
   const handleReset = () => {
     resetDistribution();
-    setChips(getInitialChips(t));
+    setChips(getInitialChips());
   };
 
   const handleClearForm = () => {
@@ -125,7 +127,7 @@ export function ManagePlayers() {
   return (
     <div className="space-y-6 fade-in-up">
       <ChipConfigCard
-        chips={chips}
+        chips={displayChips}
         editingChip={editingChip}
         editValues={editValues}
         onEditValuesChange={(values) =>
