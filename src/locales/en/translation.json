@@ -1,0 +1,109 @@
+{
+  "currency": {
+    "locale": "en-US",
+    "code": "USD"
+  },
+  "nav": {
+    "home": "Home",
+    "players": "Players",
+    "timer": "Timer",
+    "back": "Go back"
+  },
+  "footer": {
+    "rights": "All rights reserved."
+  },
+  "theme": {
+    "toggle": "Toggle theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
+  "home": {
+    "title": "Welcome to Poker Chips",
+    "subtitle": "Manage your poker chips easily and intuitively.",
+    "cards": {
+      "players": {
+        "title": "Players",
+        "description": "Add and manage players for your games."
+      },
+      "timer": {
+        "title": "Timer",
+        "description": "Countdown timer with start, pause and stop."
+      }
+    }
+  },
+  "managePlayers": {
+    "title": "Manage Players",
+    "subtitle": "Add, edit and manage players for your poker games.",
+    "chipConfig": {
+      "title": "Chip Distribution",
+      "restoreDefault": "Restore Defaults"
+    },
+    "form": {
+      "numberOfPlayers": "Number of Players",
+      "numberOfPlayersPlaceholder": "e.g. 6",
+      "initialStack": "Initial Stack Value ($)",
+      "initialStackPlaceholder": "e.g. 10000.00",
+      "initialStackHint": "Recommended: at least 100 big blinds ({{amount}})",
+      "smallBlind": "Small Blind ($)",
+      "smallBlindPlaceholder": "e.g. 50.00",
+      "bigBlind": "Big Blind ($)",
+      "bigBlindPlaceholder": "e.g. 100.00",
+      "clear": "Clear",
+      "calculate": "Calculate Chips"
+    },
+    "chipRow": {
+      "name": "Name",
+      "value": "Value",
+      "quantity": "Quantity",
+      "color": "Color",
+      "units": "units"
+    },
+    "result": {
+      "title": "Distribution per Player",
+      "blinds": "Blinds",
+      "stack": "Stack",
+      "players": "Players",
+      "chipsPerPlayer": "Chips per Player:",
+      "total": "Total:"
+    },
+    "error": {
+      "message": "Could not calculate distribution. Check:",
+      "reasons": {
+        "chips": "If there are enough chips for the requested value",
+        "stack": "If the initial stack is at least 100 big blinds (recommended)",
+        "smallChips": "If there are chips small enough for the small blind",
+        "bigBlind": "If the big blind is greater than or equal to the small blind"
+      }
+    }
+  },
+  "timer": {
+    "title": "Timer",
+    "subtitle": "Set the duration in minutes and optionally seconds (0–59), then start, pause or stop the timer. Time keeps running even if you leave this page.",
+    "timeEnded": "Time is up!",
+    "close": "Close",
+    "duration": "Duration",
+    "minutes": "Minutes",
+    "seconds": "Seconds",
+    "hint": "Default: 10 minutes and 0 seconds. Seconds range from 0 to 59. Fields are locked while the timer is running.",
+    "start": "Start",
+    "resume": "Resume",
+    "pause": "Pause",
+    "stop": "Stop",
+    "history": {
+      "title": "Run history",
+      "clear": "Clear records",
+      "empty": "No runs recorded yet.",
+      "startColumn": "Start (date & time)",
+      "endColumn": "End (date & time)",
+      "ongoing": "In progress"
+    }
+  },
+  "initialChips": {
+    "white": "White Chips",
+    "red": "Red Chips",
+    "black": "Black Chips",
+    "blue": "Blue Chips",
+    "green": "Green Chips"
+  }
+}

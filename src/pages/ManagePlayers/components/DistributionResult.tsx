@@ -3,9 +3,10 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { formatCurrency } from "@/utils/formatCurrency";
+import { useCurrencyFormatter } from "@/hooks/useCurrencyFormatter";
 import { getContrastTextColor } from "@/utils/color";
 import type { PlayerDistribution } from "../types";
+import { useTranslation } from "react-i18next";
 
 type DistributionResultProps = {
   distribution: PlayerDistribution[];
@@ -22,6 +23,9 @@ export function DistributionResult({
   initialStack,
   isHiding,
 }: DistributionResultProps) {
+  const { t } = useTranslation();
+  const formatCurrency = useCurrencyFormatter();
+
   return (
     <div
       id="distribution-result"
@@ -31,11 +35,13 @@ export function DistributionResult({
     >
       <div className="mb-4">
         <h2 className="text-2xl font-semibold mb-2">
-          Distribuição por Jogador
+          {t("managePlayers.result.title")}
         </h2>
         <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
           <span>
-            <strong className="text-foreground">Blinds:</strong>{" "}
+            <strong className="text-foreground">
+              {t("managePlayers.result.blinds")}:
+            </strong>{" "}
             {formatCurrency(parseFloat(smallBlind))} /{" "}
             {formatCurrency(parseFloat(bigBlind))}
           </span>
@@ -43,14 +49,18 @@ export function DistributionResult({
             !isNaN(parseFloat(bigBlind)) &&
             parseFloat(bigBlind) > 0 && (
               <span>
-                <strong className="text-foreground">Stack:</strong>{" "}
+                <strong className="text-foreground">
+                  {t("managePlayers.result.stack")}:
+                </strong>{" "}
                 {formatCurrency(parseFloat(initialStack))} (
                 {Math.round(parseFloat(initialStack) / parseFloat(bigBlind))}{" "}
                 BB)
               </span>
             )}
           <span>
-            <strong className="text-foreground">Jogadores:</strong>{" "}
+            <strong className="text-foreground">
+              {t("managePlayers.result.players")}:
+            </strong>{" "}
             {distribution.length}
           </span>
         </div>
@@ -61,9 +71,12 @@ export function DistributionResult({
         }`}
       >
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-lg font-semibold">Fichas por Jogador:</h3>
+          <h3 className="text-lg font-semibold">
+            {t("managePlayers.result.chipsPerPlayer")}
+          </h3>
           <span className="text-sm font-medium text-muted-foreground">
-            Total: {formatCurrency(distribution[0].totalValue)}
+            {t("managePlayers.result.total")}{" "}
+            {formatCurrency(distribution[0].totalValue)}
           </span>
         </div>
         <div className="flex flex-wrap gap-2">

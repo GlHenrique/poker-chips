@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { ChipRow } from "./ChipRow";
 import type { Chip } from "../types";
 import type { ChipEditValues } from "../types";
+import { useTranslation } from "react-i18next";
 
 type ChipConfigCardProps = {
   chips: Chip[];
@@ -24,12 +25,21 @@ export function ChipConfigCard({
   onCancel,
   onReset,
 }: ChipConfigCardProps) {
+  const { t } = useTranslation();
+
   return (
     <div className="rounded-lg border bg-card p-6">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-2xl font-semibold">Distribuição de Fichas</h2>
-        <Button variant="outline" size="sm" onClick={onReset} className="text-xs">
-          Restaurar Padrão
+        <h2 className="text-2xl font-semibold">
+          {t("managePlayers.chipConfig.title")}
+        </h2>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={onReset}
+          className="text-xs"
+        >
+          {t("managePlayers.chipConfig.restoreDefault")}
         </Button>
       </div>
       <div className="space-y-3">

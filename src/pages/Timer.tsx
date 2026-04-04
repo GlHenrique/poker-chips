@@ -2,15 +2,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { formatTime, useTimer } from "@/context/TimerContext";
+import { useTranslation } from "react-i18next";
 
 function formatDateTime(iso: string): string {
-  return new Date(iso).toLocaleString("pt-BR", {
+  return new Date(iso).toLocaleString(undefined, {
     dateStyle: "short",
     timeStyle: "medium",
   });
 }
 
 export function Timer() {
+  const { t } = useTranslation();
   const {
     minutes,
     seconds,
@@ -32,12 +34,8 @@ export function Timer() {
   return (
     <div className="mx-auto max-w-3xl space-y-8 fade-in-up">
       <div className="space-y-2">
-        <h1 className="text-4xl font-bold tracking-tight">Timer</h1>
-        <p className="text-muted-foreground">
-          Defina a duração em minutos e opcionalmente em segundos (0–59), depois
-          inicie, pause ou pare o contador. O tempo continua mesmo ao sair desta
-          página.
-        </p>
+        <h1 className="text-4xl font-bold tracking-tight">{t("timer.title")}</h1>
+        <p className="text-muted-foreground">{t("timer.subtitle")}</p>
       </div>
 
       {showNaturalEndMessage && (
@@ -46,7 +44,7 @@ export function Timer() {
           role="status"
         >
           <p className="text-sm font-medium text-foreground">
-            Tempo finalizado!
+            {t("timer.timeEnded")}
           </p>
           <Button
             type="button"
@@ -54,7 +52,7 @@ export function Timer() {
             variant="outline"
             onClick={dismissNaturalEndMessage}
           >
-            Fechar
+            {t("timer.close")}
           </Button>
         </div>
       )}
@@ -68,10 +66,10 @@ export function Timer() {
         </div>
 
         <div className="space-y-2">
-          <span className="text-sm font-medium">Duração</span>
+          <span className="text-sm font-medium">{t("timer.duration")}</span>
           <div className="flex flex-wrap items-end gap-4">
             <div className="space-y-2">
-              <Label htmlFor="timer-minutes">Minutos</Label>
+              <Label htmlFor="timer-minutes">{t("timer.minutes")}</Label>
               <Input
                 id="timer-minutes"
                 type="text"
@@ -84,7 +82,7 @@ export function Timer() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="timer-seconds">Segundos</Label>
+              <Label htmlFor="timer-seconds">{t("timer.seconds")}</Label>
               <Input
                 id="timer-seconds"
                 type="text"
@@ -98,10 +96,7 @@ export function Timer() {
               />
             </div>
           </div>
-          <p className="text-xs text-muted-foreground">
-            Padrão: 10 minutos e 0 segundos. Segundos de 0 a 59. Durante a
-            contagem os campos ficam bloqueados.
-          </p>
+          <p className="text-xs text-muted-foreground">{t("timer.hint")}</p>
         </div>
 
         <div className="flex flex-wrap gap-3">
@@ -110,7 +105,7 @@ export function Timer() {
             onClick={start}
             disabled={phase === "running" || totalInputSeconds <= 0}
           >
-            {phase === "paused" ? "Continuar" : "Iniciar"}
+            {phase === "paused" ? t("timer.resume") : t("timer.start")}
           </Button>
           <Button
             type="button"
@@ -118,7 +113,7 @@ export function Timer() {
             onClick={pause}
             disabled={phase !== "running"}
           >
-            Pausar
+            {t("timer.pause")}
           </Button>
           <Button
             type="button"
@@ -126,7 +121,7 @@ export function Timer() {
             onClick={stop}
             disabled={phase === "idle"}
           >
-            Parar
+            {t("timer.stop")}
           </Button>
         </div>
       </div>
@@ -134,7 +129,7 @@ export function Timer() {
       <div className="space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h2 className="text-lg font-semibold tracking-tight">
-            Histórico de execuções
+            {t("timer.history.title")}
           </h2>
           <Button
             type="button"
@@ -143,12 +138,12 @@ export function Timer() {
             onClick={clearSessions}
             disabled={sessions.length === 0}
           >
-            Limpar registros
+            {t("timer.history.clear")}
           </Button>
         </div>
         {sessions.length === 0 ? (
           <p className="text-sm text-muted-foreground">
-            Nenhuma execução registrada ainda.
+            {t("timer.history.empty")}
           </p>
         ) : (
           <div className="overflow-x-auto rounded-lg border">
@@ -156,10 +151,10 @@ export function Timer() {
               <thead>
                 <tr className="border-b bg-muted/50">
                   <th className="px-3 py-2 text-left font-medium">
-                    Início (data e hora)
+                    {t("timer.history.startColumn")}
                   </th>
                   <th className="px-3 py-2 text-left font-medium">
-                    Fim (data e hora)
+                    {t("timer.history.endColumn")}
                   </th>
                 </tr>
               </thead>
@@ -172,7 +167,7 @@ export function Timer() {
                     <td className="px-3 py-2.5 font-mono text-xs tabular-nums text-muted-foreground">
                       {row.finishedAt
                         ? formatDateTime(row.finishedAt)
-                        : "Em andamento"}
+                        : t("timer.history.ongoing")}
                     </td>
                   </tr>
                 ))}

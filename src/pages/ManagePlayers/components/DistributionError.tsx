@@ -1,8 +1,12 @@
+import { useTranslation } from "react-i18next";
+
 type DistributionErrorProps = {
   isHiding: boolean;
 };
 
 export function DistributionError({ isHiding }: DistributionErrorProps) {
+  const { t } = useTranslation();
+
   return (
     <div
       className={`rounded-lg border bg-card p-6 ${
@@ -10,13 +14,13 @@ export function DistributionError({ isHiding }: DistributionErrorProps) {
       }`}
     >
       <p className="text-muted-foreground text-center">
-        Não foi possível calcular a distribuição. Verifique:
+        {t("managePlayers.error.message")}
       </p>
       <ul className="list-disc list-inside mt-2 text-sm text-muted-foreground space-y-1">
-        <li>Se há fichas suficientes para o valor solicitado</li>
-        <li>Se a stack inicial é pelo menos 100 big blinds (recomendado)</li>
-        <li>Se há fichas pequenas o suficiente para o small blind</li>
-        <li>Se o big blind é maior ou igual ao small blind</li>
+        <li>{t("managePlayers.error.reasons.chips")}</li>
+        <li>{t("managePlayers.error.reasons.stack")}</li>
+        <li>{t("managePlayers.error.reasons.smallChips")}</li>
+        <li>{t("managePlayers.error.reasons.bigBlind")}</li>
       </ul>
     </div>
   );

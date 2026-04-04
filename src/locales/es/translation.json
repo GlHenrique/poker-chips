@@ -1,0 +1,109 @@
+{
+  "currency": {
+    "locale": "es-ES",
+    "code": "EUR"
+  },
+  "nav": {
+    "home": "Inicio",
+    "players": "Jugadores",
+    "timer": "Temporizador",
+    "back": "Volver"
+  },
+  "footer": {
+    "rights": "Todos los derechos reservados."
+  },
+  "theme": {
+    "toggle": "Cambiar tema",
+    "light": "Claro",
+    "dark": "Oscuro",
+    "system": "Sistema"
+  },
+  "home": {
+    "title": "Bienvenido a Poker Chips",
+    "subtitle": "Gestiona tus fichas de póker de forma fácil e intuitiva.",
+    "cards": {
+      "players": {
+        "title": "Jugadores",
+        "description": "Agrega y gestiona los jugadores de tus partidas."
+      },
+      "timer": {
+        "title": "Temporizador",
+        "description": "Cuenta regresiva con iniciar, pausar y detener."
+      }
+    }
+  },
+  "managePlayers": {
+    "title": "Gestionar Jugadores",
+    "subtitle": "Agrega, edita y gestiona los jugadores de tus partidas de póker.",
+    "chipConfig": {
+      "title": "Distribución de Fichas",
+      "restoreDefault": "Restaurar Predeterminado"
+    },
+    "form": {
+      "numberOfPlayers": "Cantidad de Jugadores",
+      "numberOfPlayersPlaceholder": "Ej: 6",
+      "initialStack": "Valor Inicial del Stack ($)",
+      "initialStackPlaceholder": "Ej: 10000.00",
+      "initialStackHint": "Recomendado: mínimo 100 big blinds ({{amount}})",
+      "smallBlind": "Small Blind ($)",
+      "smallBlindPlaceholder": "Ej: 50.00",
+      "bigBlind": "Big Blind ($)",
+      "bigBlindPlaceholder": "Ej: 100.00",
+      "clear": "Limpiar",
+      "calculate": "Calcular Fichas"
+    },
+    "chipRow": {
+      "name": "Nombre",
+      "value": "Valor",
+      "quantity": "Cantidad",
+      "color": "Color",
+      "units": "unidades"
+    },
+    "result": {
+      "title": "Distribución por Jugador",
+      "blinds": "Blinds",
+      "stack": "Stack",
+      "players": "Jugadores",
+      "chipsPerPlayer": "Fichas por Jugador:",
+      "total": "Total:"
+    },
+    "error": {
+      "message": "No fue posible calcular la distribución. Verifica:",
+      "reasons": {
+        "chips": "Si hay fichas suficientes para el valor solicitado",
+        "stack": "Si el stack inicial es al menos 100 big blinds (recomendado)",
+        "smallChips": "Si hay fichas lo suficientemente pequeñas para el small blind",
+        "bigBlind": "Si el big blind es mayor o igual al small blind"
+      }
+    }
+  },
+  "timer": {
+    "title": "Temporizador",
+    "subtitle": "Define la duración en minutos y opcionalmente en segundos (0–59), luego inicia, pausa o detén el temporizador. El tiempo sigue corriendo aunque salgas de esta página.",
+    "timeEnded": "¡Tiempo terminado!",
+    "close": "Cerrar",
+    "duration": "Duración",
+    "minutes": "Minutos",
+    "seconds": "Segundos",
+    "hint": "Predeterminado: 10 minutos y 0 segundos. Segundos de 0 a 59. Los campos se bloquean durante la cuenta regresiva.",
+    "start": "Iniciar",
+    "resume": "Continuar",
+    "pause": "Pausar",
+    "stop": "Detener",
+    "history": {
+      "title": "Historial de ejecuciones",
+      "clear": "Limpiar registros",
+      "empty": "Ninguna ejecución registrada aún.",
+      "startColumn": "Inicio (fecha y hora)",
+      "endColumn": "Fin (fecha y hora)",
+      "ongoing": "En curso"
+    }
+  },
+  "initialChips": {
+    "white": "Fichas Blancas",
+    "red": "Fichas Rojas",
+    "black": "Fichas Negras",
+    "blue": "Fichas Azules",
+    "green": "Fichas Verdes"
+  }
+}

@@ -1,9 +1,10 @@
 import { Outlet, useLocation, Link } from "react-router";
-import { ModeToggle, useTheme } from "@/components/app";
+import { ModeToggle, useTheme, LanguageSwitcher } from "@/components/app";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import LogoDark from "@/assets/poker-chips-logo.svg";
 import LogoLight from "@/assets/poker-chips-logo-light.svg";
+import { useTranslation } from "react-i18next";
 
 export function Layout() {
   const location = useLocation();
@@ -11,6 +12,7 @@ export function Layout() {
   const isManagePlayers = location.pathname === "/manage-players";
   const isTimer = location.pathname === "/timer";
   const { theme } = useTheme();
+  const { t } = useTranslation();
 
   const isDark =
     theme === "dark" ||
@@ -30,7 +32,7 @@ export function Layout() {
               <Link to="/" className="fixed top-4 left-[-54px]">
                 <Button variant="ghost" size="icon" className="mr-2">
                   <ArrowLeft className="h-4 w-4" />
-                  <span className="sr-only">Voltar</span>
+                  <span className="sr-only">{t("nav.back")}</span>
                 </Button>
               </Link>
             )}
@@ -51,7 +53,7 @@ export function Layout() {
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
-              Início
+              {t("nav.home")}
             </Link>
             <Link
               to="/manage-players"
@@ -61,7 +63,7 @@ export function Layout() {
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
-              Jogadores
+              {t("nav.players")}
             </Link>
             <Link
               to="/timer"
@@ -71,9 +73,10 @@ export function Layout() {
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
-              Timer
+              {t("nav.timer")}
             </Link>
             <div className="hidden h-6 w-px bg-border md:block" />
+            <LanguageSwitcher />
             <ModeToggle />
           </nav>
         </div>
@@ -88,8 +91,7 @@ export function Layout() {
       <footer className="border-t bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
         <div className="flex h-14 items-center justify-center px-4">
           <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} Poker Chips. Todos os direitos
-            reservados.
+            © {new Date().getFullYear()} Poker Chips. {t("footer.rights")}
           </p>
         </div>
       </footer>

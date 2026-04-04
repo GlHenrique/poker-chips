@@ -1,7 +1,8 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { formatCurrency } from "@/utils/formatCurrency";
+import { useCurrencyFormatter } from "@/hooks/useCurrencyFormatter";
+import { useTranslation } from "react-i18next";
 
 type DistributionFormProps = {
   numberOfPlayers: string;
@@ -28,6 +29,9 @@ export function DistributionForm({
   onSubmit,
   onClear,
 }: DistributionFormProps) {
+  const { t } = useTranslation();
+  const formatCurrency = useCurrencyFormatter();
+
   const isSubmitDisabled =
     !numberOfPlayers ||
     !initialStack ||
@@ -41,12 +45,14 @@ export function DistributionForm({
       className="rounded-lg border bg-card p-4 space-y-4"
     >
       <div className="space-y-2">
-        <Label htmlFor="numberOfPlayers">Quantidade de Jogadores</Label>
+        <Label htmlFor="numberOfPlayers">
+          {t("managePlayers.form.numberOfPlayers")}
+        </Label>
         <Input
           id="numberOfPlayers"
           type="number"
           min="1"
-          placeholder="Ex: 6"
+          placeholder={t("managePlayers.form.numberOfPlayersPlaceholder")}
           value={numberOfPlayers}
           onChange={(e) => onNumberOfPlayersChange(e.target.value)}
           required
@@ -54,13 +60,15 @@ export function DistributionForm({
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="initialStack">Valor Inicial da Stack (R$)</Label>
+        <Label htmlFor="initialStack">
+          {t("managePlayers.form.initialStack")}
+        </Label>
         <Input
           id="initialStack"
           type="number"
           min="0"
           step="0.01"
-          placeholder="Ex: 10000.00"
+          placeholder={t("managePlayers.form.initialStackPlaceholder")}
           value={initialStack}
           onChange={(e) => onInitialStackChange(e.target.value)}
           required
@@ -68,8 +76,9 @@ export function DistributionForm({
         <p className="text-xs text-muted-foreground">
           {bigBlind && !isNaN(parseFloat(bigBlind)) && (
             <>
-              Recomendado: mínimo 100 big blinds (
-              {formatCurrency(parseFloat(bigBlind) * 100)})
+              {t("managePlayers.form.initialStackHint", {
+                amount: formatCurrency(parseFloat(bigBlind) * 100),
+              })}
             </>
           )}
         </p>
@@ -77,26 +86,28 @@ export function DistributionForm({
 
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="smallBlind">Small Blind (R$)</Label>
+          <Label htmlFor="smallBlind">
+            {t("managePlayers.form.smallBlind")}
+          </Label>
           <Input
             id="smallBlind"
             type="number"
             min="0"
             step="0.01"
-            placeholder="Ex: 50.00"
+            placeholder={t("managePlayers.form.smallBlindPlaceholder")}
             value={smallBlind}
             onChange={(e) => onSmallBlindChange(e.target.value)}
             required
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="bigBlind">Big Blind (R$)</Label>
+          <Label htmlFor="bigBlind">{t("managePlayers.form.bigBlind")}</Label>
           <Input
             id="bigBlind"
             type="number"
             min="0"
             step="0.01"
-            placeholder="Ex: 100.00"
+            placeholder={t("managePlayers.form.bigBlindPlaceholder")}
             value={bigBlind}
             onChange={(e) => onBigBlindChange(e.target.value)}
             required
@@ -111,10 +122,10 @@ export function DistributionForm({
           className="border-accent text-accent-foreground hover:bg-accent/10"
           onClick={onClear}
         >
-          Limpar
+          {t("managePlayers.form.clear")}
         </Button>
         <Button type="submit" disabled={isSubmitDisabled}>
-          Calcular Fichas
+          {t("managePlayers.form.calculate")}
         </Button>
       </div>
     </form>

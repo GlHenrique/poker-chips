@@ -1,5 +1,6 @@
 export type Chip = {
   name: string;
+  nameKey?: string;
   value: number;
   quantity: number;
   color: string;

@@ -1,15 +1,16 @@
 import { Link } from "react-router";
+import { useTranslation } from "react-i18next";
 
 export function Home() {
+  const { t } = useTranslation();
+
   return (
     <div className="space-y-6 fade-in-up">
       <div className="space-y-2">
         <h1 className="text-4xl font-bold tracking-tight">
-          Bem-vindo ao Poker Chips
+          {t("home.title")}
         </h1>
-        <p className="text-muted-foreground">
-          Gerencie suas fichas de poker de forma fácil e intuitiva.
-        </p>
+        <p className="text-muted-foreground">{t("home.subtitle")}</p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -17,18 +18,22 @@ export function Home() {
           to="/manage-players"
           className="rounded-lg border bg-card p-6 hover:bg-accent transition-colors cursor-pointer block"
         >
-          <h3 className="text-lg font-semibold mb-2">Jogadores</h3>
+          <h3 className="text-lg font-semibold mb-2">
+            {t("home.cards.players.title")}
+          </h3>
           <p className="text-sm text-muted-foreground">
-            Adicione e gerencie os jogadores das suas partidas.
+            {t("home.cards.players.description")}
           </p>
         </Link>
         <Link
           to="/timer"
           className="rounded-lg border bg-card p-6 hover:bg-accent transition-colors cursor-pointer block"
         >
-          <h3 className="text-lg font-semibold mb-2">Timer</h3>
+          <h3 className="text-lg font-semibold mb-2">
+            {t("home.cards.timer.title")}
+          </h3>
           <p className="text-sm text-muted-foreground">
-            Contador regressivo com iniciar, pausar e parar.
+            {t("home.cards.timer.description")}
           </p>
         </Link>
       </div>

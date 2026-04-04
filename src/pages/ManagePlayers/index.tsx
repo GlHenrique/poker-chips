@@ -1,7 +1,7 @@
-import { useState, type FormEvent } from "react";
+import { useState, useEffect, type FormEvent } from "react";
 import { scrollToElementById } from "@/utils/scrollToElement";
 import { calculateDistribution } from "../../utils/calculateDistribution";
-import { initialChips } from "./constants";
+import { getInitialChips } from "./constants";
 import type { Chip, ChipEditValues, PlayerDistribution } from "./types";
 import {
   ChipConfigCard,
@@ -9,6 +9,7 @@ import {
   DistributionResult,
   DistributionError,
 } from "./components";
+import { useTranslation } from "react-i18next";
 
 const emptyEditValues: ChipEditValues = {
   name: "",
@@ -18,17 +19,27 @@ const emptyEditValues: ChipEditValues = {
 };
 
 export function ManagePlayers() {
+  const { t, i18n } = useTranslation();
   const [numberOfPlayers, setNumberOfPlayers] = useState("");
   const [initialStack, setInitialStack] = useState("");
   const [smallBlind, setSmallBlind] = useState("50");
   const [bigBlind, setBigBlind] = useState("100");
-  const [chips, setChips] = useState<Chip[]>(initialChips);
+  const [chips, setChips] = useState<Chip[]>(() => getInitialChips(t));
   const [editingChip, setEditingChip] = useState<string | null>(null);
   const [editValues, setEditValues] = useState<ChipEditValues>(emptyEditValues);
   const [distribution, setDistribution] = useState<PlayerDistribution[] | null>(
     null,
   );
   const [isHidingDistribution, setIsHidingDistribution] = useState(false);
+
+  // Re-translate chip names that still use a translation key when language changes
+  useEffect(() => {
+    setChips((prev) =>
+      prev.map((chip) =>
+        chip.nameKey ? { ...chip, name: t(chip.nameKey) } : chip,
+      ),
+    );
+  }, [i18n.language, t]);
 
   const resetDistribution = (withAnimation = false) => {
     if (distribution === null) return;
@@ -73,6 +84,7 @@ export function ManagePlayers() {
           ? {
               ...chip,
               name: editValues.name || chip.name,
+              nameKey: undefined,
               value: parseFloat(editValues.value) || chip.value,
               quantity: parseInt(editValues.quantity, 10) || chip.quantity,
               color: editValues.color || chip.color,
@@ -92,7 +104,7 @@ export function ManagePlayers() {
 
   const handleReset = () => {
     resetDistribution();
-    setChips(initialChips);
+    setChips(getInitialChips(t));
   };
 
   const handleClearForm = () => {
@@ -127,11 +139,9 @@ export function ManagePlayers() {
 
       <div className="space-y-2">
         <h1 className="text-3xl font-bold tracking-tight">
-          Gerenciar Jogadores
+          {t("managePlayers.title")}
         </h1>
-        <p className="text-muted-foreground">
-          Adicione, edite e gerencie os jogadores das suas partidas de poker.
-        </p>
+        <p className="text-muted-foreground">{t("managePlayers.subtitle")}</p>
       </div>
 
       <DistributionForm

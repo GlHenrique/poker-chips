@@ -2,9 +2,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Edit2, Check, X } from "lucide-react";
-import { formatCurrency } from "@/utils/formatCurrency";
+import { useCurrencyFormatter } from "@/hooks/useCurrencyFormatter";
 import type { Chip } from "../types";
 import type { ChipEditValues } from "../types";
+import { useTranslation } from "react-i18next";
 
 type ChipRowProps = {
   chip: Chip;
@@ -25,6 +26,9 @@ export function ChipRow({
   onSave,
   onCancel,
 }: ChipRowProps) {
+  const { t } = useTranslation();
+  const formatCurrency = useCurrencyFormatter();
+
   return (
     <div className="flex items-center justify-between p-2 rounded-md bg-muted/20">
       <div className="flex items-center gap-3">
@@ -39,31 +43,39 @@ export function ChipRow({
           <div className="flex items-center gap-2">
             <div className="flex flex-col gap-1 items-end">
               <div className="flex items-center gap-2">
-                <Label htmlFor={`name-${chip.name}`}>Nome</Label>
+                <Label htmlFor={`name-${chip.name}`}>
+                  {t("managePlayers.chipRow.name")}
+                </Label>
                 <Input
                   id={`name-${chip.name}`}
                   type="text"
                   value={editValues.name}
                   onChange={(e) => onEditValuesChange({ name: e.target.value })}
                   className="w-32 h-8 text-sm"
-                  placeholder="Nome"
+                  placeholder={t("managePlayers.chipRow.name")}
                 />
               </div>
               <div className="flex items-center gap-2">
-                <Label htmlFor={`value-${chip.name}`}>Valor</Label>
+                <Label htmlFor={`value-${chip.name}`}>
+                  {t("managePlayers.chipRow.value")}
+                </Label>
                 <Input
                   id={`value-${chip.name}`}
                   type="number"
                   min="0"
                   step="0.01"
                   value={editValues.value}
-                  onChange={(e) => onEditValuesChange({ value: e.target.value })}
+                  onChange={(e) =>
+                    onEditValuesChange({ value: e.target.value })
+                  }
                   className="w-24 h-8 text-sm"
-                  placeholder="Valor"
+                  placeholder={t("managePlayers.chipRow.value")}
                 />
               </div>
               <div className="flex items-center gap-2">
-                <Label htmlFor={`quantity-${chip.name}`}>Quantidade</Label>
+                <Label htmlFor={`quantity-${chip.name}`}>
+                  {t("managePlayers.chipRow.quantity")}
+                </Label>
                 <Input
                   id={`quantity-${chip.name}`}
                   type="number"
@@ -73,24 +85,38 @@ export function ChipRow({
                     onEditValuesChange({ quantity: e.target.value })
                   }
                   className="w-24 h-8 text-sm"
-                  placeholder="Quantidade"
+                  placeholder={t("managePlayers.chipRow.quantity")}
                 />
               </div>
               <div className="flex items-center gap-2">
-                <Label htmlFor={`color-${chip.name}`}>Cor</Label>
+                <Label htmlFor={`color-${chip.name}`}>
+                  {t("managePlayers.chipRow.color")}
+                </Label>
                 <input
                   id={`color-${chip.name}`}
                   type="color"
                   value={editValues.color}
-                  onChange={(e) => onEditValuesChange({ color: e.target.value })}
+                  onChange={(e) =>
+                    onEditValuesChange({ color: e.target.value })
+                  }
                   className="h-8 w-10 rounded-md border border-border bg-transparent cursor-pointer"
                 />
               </div>
             </div>
-            <Button size="icon" variant="ghost" onClick={onSave} className="h-8 w-8">
+            <Button
+              size="icon"
+              variant="ghost"
+              onClick={onSave}
+              className="h-8 w-8"
+            >
               <Check className="h-4 w-4 text-green-600" />
             </Button>
-            <Button size="icon" variant="ghost" onClick={onCancel} className="h-8 w-8">
+            <Button
+              size="icon"
+              variant="ghost"
+              onClick={onCancel}
+              className="h-8 w-8"
+            >
               <X className="h-4 w-4 text-red-600" />
             </Button>
           </div>
@@ -99,7 +125,7 @@ export function ChipRow({
             <div className="text-right">
               <div className="font-semibold">{formatCurrency(chip.value)}</div>
               <div className="text-sm text-muted-foreground">
-                {chip.quantity} unidades
+                {chip.quantity} {t("managePlayers.chipRow.units")}
               </div>
             </div>
             <Button
